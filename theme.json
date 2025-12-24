@@ -1,13 +1,20 @@
 {
   "name": "Developer Developer",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A developer-focused tech and code blog template for RustPress, featuring clean design, code highlighting, and modern aesthetics.",
   "author": "RustPress Team",
   "authorUrl": "https://rustpress.dev",
   "license": "MIT",
   "screenshot": "screenshot.png",
-  "tags": ["developer", "developer", "tech", "code", "blog", "tutorials", "dark-mode"],
-
+  "tags": [
+    "developer",
+    "developer",
+    "tech",
+    "code",
+    "blog",
+    "tutorials",
+    "dark-mode"
+  ],
   "supports": {
     "darkMode": true,
     "customColors": true,
@@ -18,7 +25,14 @@
     "customFooter": true,
     "customSidebar": true,
     "featuredImages": true,
-    "postFormats": ["standard", "video", "audio", "gallery", "quote", "link"],
+    "postFormats": [
+      "standard",
+      "video",
+      "audio",
+      "gallery",
+      "quote",
+      "link"
+    ],
     "comments": true,
     "search": true,
     "pagination": true,
@@ -29,7 +43,6 @@
     "newsletter": true,
     "ecommerce": true
   },
-
   "settings": {
     "colors": {
       "primary": "#3B82F6",
@@ -71,7 +84,15 @@
       "enabled": true,
       "position": "right",
       "sticky": true,
-      "widgets": ["search", "about", "categories", "recent-posts", "tags", "newsletter", "social"]
+      "widgets": [
+        "search",
+        "about",
+        "categories",
+        "recent-posts",
+        "tags",
+        "newsletter",
+        "social"
+      ]
     },
     "blog": {
       "postsPerPage": 12,
@@ -122,7 +143,6 @@
       "footerAd": ""
     }
   },
-
   "menus": {
     "primary": {
       "name": "Primary Menu",
@@ -141,7 +161,6 @@
       "location": "mobile"
     }
   },
-
   "widgetAreas": {
     "sidebar": {
       "name": "Main Sidebar",
@@ -168,7 +187,6 @@
       "description": "Widget area in header"
     }
   },
-
   "templates": {
     "home": "templates/home.html",
     "page": "templates/page.html",
@@ -186,7 +204,6 @@
     "contact": "templates/contact.html",
     "about": "templates/about.html"
   },
-
   "assets": {
     "css": [
       "assets/css/style.css",
@@ -199,61 +216,161 @@
       "assets/js/search.js"
     ]
   },
-
   "customizer": {
     "sections": [
       {
         "id": "general",
         "title": "General Settings",
         "fields": [
-          {"id": "site_logo", "type": "image", "label": "Site Logo"},
-          {"id": "site_favicon", "type": "image", "label": "Favicon"},
-          {"id": "site_tagline", "type": "text", "label": "Site Tagline"}
+          {
+            "id": "site_logo",
+            "type": "image",
+            "label": "Site Logo"
+          },
+          {
+            "id": "site_favicon",
+            "type": "image",
+            "label": "Favicon"
+          },
+          {
+            "id": "site_tagline",
+            "type": "text",
+            "label": "Site Tagline"
+          }
         ]
       },
       {
         "id": "colors",
         "title": "Color Settings",
         "fields": [
-          {"id": "primary_color", "type": "color", "label": "Primary Color", "default": "#3B82F6"},
-          {"id": "secondary_color", "type": "color", "label": "Secondary Color", "default": "#8B5CF6"},
-          {"id": "accent_color", "type": "color", "label": "Accent Color", "default": "#10B981"}
+          {
+            "id": "primary_color",
+            "type": "color",
+            "label": "Primary Color",
+            "default": "#3B82F6"
+          },
+          {
+            "id": "secondary_color",
+            "type": "color",
+            "label": "Secondary Color",
+            "default": "#8B5CF6"
+          },
+          {
+            "id": "accent_color",
+            "type": "color",
+            "label": "Accent Color",
+            "default": "#10B981"
+          }
         ]
       },
       {
         "id": "typography",
         "title": "Typography",
         "fields": [
-          {"id": "heading_font", "type": "font", "label": "Heading Font", "default": "Inter"},
-          {"id": "body_font", "type": "font", "label": "Body Font", "default": "Inter"},
-          {"id": "base_font_size", "type": "number", "label": "Base Font Size", "default": 16}
+          {
+            "id": "heading_font",
+            "type": "font",
+            "label": "Heading Font",
+            "default": "Inter"
+          },
+          {
+            "id": "body_font",
+            "type": "font",
+            "label": "Body Font",
+            "default": "Inter"
+          },
+          {
+            "id": "base_font_size",
+            "type": "number",
+            "label": "Base Font Size",
+            "default": 16
+          }
         ]
       },
       {
         "id": "header",
         "title": "Header Settings",
         "fields": [
-          {"id": "header_style", "type": "select", "label": "Header Style", "options": ["default", "centered", "minimal", "magazine"]},
-          {"id": "sticky_header", "type": "toggle", "label": "Sticky Header", "default": true},
-          {"id": "show_search", "type": "toggle", "label": "Show Search", "default": true}
+          {
+            "id": "header_style",
+            "type": "select",
+            "label": "Header Style",
+            "options": [
+              "default",
+              "centered",
+              "minimal",
+              "magazine"
+            ]
+          },
+          {
+            "id": "sticky_header",
+            "type": "toggle",
+            "label": "Sticky Header",
+            "default": true
+          },
+          {
+            "id": "show_search",
+            "type": "toggle",
+            "label": "Show Search",
+            "default": true
+          }
         ]
       },
       {
         "id": "footer",
         "title": "Footer Settings",
         "fields": [
-          {"id": "footer_style", "type": "select", "label": "Footer Style", "options": ["default", "minimal", "centered", "dark"]},
-          {"id": "footer_columns", "type": "number", "label": "Footer Columns", "default": 4},
-          {"id": "copyright_text", "type": "text", "label": "Copyright Text"}
+          {
+            "id": "footer_style",
+            "type": "select",
+            "label": "Footer Style",
+            "options": [
+              "default",
+              "minimal",
+              "centered",
+              "dark"
+            ]
+          },
+          {
+            "id": "footer_columns",
+            "type": "number",
+            "label": "Footer Columns",
+            "default": 4
+          },
+          {
+            "id": "copyright_text",
+            "type": "text",
+            "label": "Copyright Text"
+          }
         ]
       },
       {
         "id": "blog",
         "title": "Blog Settings",
         "fields": [
-          {"id": "posts_per_page", "type": "number", "label": "Posts Per Page", "default": 12},
-          {"id": "blog_layout", "type": "select", "label": "Blog Layout", "options": ["grid", "list", "masonry", "magazine"]},
-          {"id": "show_sidebar", "type": "toggle", "label": "Show Sidebar", "default": true}
+          {
+            "id": "posts_per_page",
+            "type": "number",
+            "label": "Posts Per Page",
+            "default": 12
+          },
+          {
+            "id": "blog_layout",
+            "type": "select",
+            "label": "Blog Layout",
+            "options": [
+              "grid",
+              "list",
+              "masonry",
+              "magazine"
+            ]
+          },
+          {
+            "id": "show_sidebar",
+            "type": "toggle",
+            "label": "Show Sidebar",
+            "default": true
+          }
         ]
       }
     ]

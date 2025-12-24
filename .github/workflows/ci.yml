@@ -1,0 +1,120 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    name: Validate Theme
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Validate theme.json (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          if [ ! -f "theme.json" ]; then
+            echo "Error: theme.json not found"
+            exit 1
+          fi
+          python3 -c "import json; data=json.load(open('theme.json')); print(f\"Theme: {data.get('name', 'unknown')} v{data.get('version', '0.0.0')}\")"
+
+      - name: Validate theme.json (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "theme.json")) {
+            Write-Error "theme.json not found"
+            exit 1
+          }
+          $theme = Get-Content theme.json | ConvertFrom-Json
+          Write-Host "Theme: $($theme.name) v$($theme.version)"
+
+      - name: Check structure (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          for dir in templates assets; do
+            if [ ! -d "$dir" ]; then
+              echo "Error: Required directory $dir not found"
+              exit 1
+            fi
+          done
+          echo "Theme structure valid"
+
+      - name: Check structure (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          @("templates", "assets") | ForEach-Object {
+            if (-not (Test-Path $_)) {
+              Write-Error "Required directory $_ not found"
+              exit 1
+            }
+          }
+          Write-Host "Theme structure valid"
+
+      - name: List theme contents (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          echo "=== Templates ==="
+          find templates -type f -name "*.html" -o -name "*.hbs" 2>/dev/null | head -20 || true
+          echo ""
+          echo "=== Assets ==="
+          find assets -type f | head -20 || true
+
+      - name: List theme contents (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          Write-Host "=== Templates ==="
+          Get-ChildItem -Path templates -Recurse -Include *.html,*.hbs | Select-Object -First 20 -ExpandProperty FullName
+          Write-Host ""
+          Write-Host "=== Assets ==="
+          Get-ChildItem -Path assets -Recurse -File | Select-Object -First 20 -ExpandProperty FullName
+
+  package-test:
+    name: Test Package Creation
+    needs: validate
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create test package (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          mkdir -p dist
+          zip -r dist/theme-test.zip theme.json README.md templates/ assets/ -x "*.git*"
+          echo "Package created:"
+          ls -la dist/
+
+      - name: Create test package (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path dist
+          Compress-Archive -Path theme.json,README.md,templates,assets -DestinationPath dist/theme-test.zip
+          Write-Host "Package created:"
+          Get-ChildItem dist/
+
+      - name: Upload test artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: theme-test-${{ matrix.os }}
+          path: dist/theme-test.zip
+          retention-days: 1

@@ -1,0 +1,261 @@
+{
+  "name": "Developer Developer",
+  "version": "1.0.0",
+  "description": "A developer-focused tech and code blog template for RustPress, featuring clean design, code highlighting, and modern aesthetics.",
+  "author": "RustPress Team",
+  "authorUrl": "https://rustpress.dev",
+  "license": "MIT",
+  "screenshot": "screenshot.png",
+  "tags": ["developer", "developer", "tech", "code", "blog", "tutorials", "dark-mode"],
+
+  "supports": {
+    "darkMode": true,
+    "customColors": true,
+    "customFonts": true,
+    "widgets": true,
+    "menus": true,
+    "customHeader": true,
+    "customFooter": true,
+    "customSidebar": true,
+    "featuredImages": true,
+    "postFormats": ["standard", "video", "audio", "gallery", "quote", "link"],
+    "comments": true,
+    "search": true,
+    "pagination": true,
+    "breadcrumbs": true,
+    "socialShare": true,
+    "relatedPosts": true,
+    "authorBox": true,
+    "newsletter": true,
+    "ecommerce": true
+  },
+
+  "settings": {
+    "colors": {
+      "primary": "#3B82F6",
+      "secondary": "#8B5CF6",
+      "accent": "#10B981",
+      "background": "#ffffff",
+      "backgroundDark": "#0f172a",
+      "text": "#1e293b",
+      "textDark": "#e2e8f0",
+      "border": "#e2e8f0",
+      "borderDark": "#334155"
+    },
+    "fonts": {
+      "heading": "Inter",
+      "body": "Inter",
+      "code": "JetBrains Mono"
+    },
+    "layout": {
+      "containerWidth": "1280px",
+      "sidebarWidth": "320px",
+      "sidebarPosition": "right"
+    },
+    "header": {
+      "style": "default",
+      "sticky": true,
+      "transparent": false,
+      "showSearch": true,
+      "showSocial": true,
+      "showNewsletter": false
+    },
+    "footer": {
+      "style": "default",
+      "columns": 4,
+      "showSocial": true,
+      "showNewsletter": true,
+      "showCopyright": true
+    },
+    "sidebar": {
+      "enabled": true,
+      "position": "right",
+      "sticky": true,
+      "widgets": ["search", "about", "categories", "recent-posts", "tags", "newsletter", "social"]
+    },
+    "blog": {
+      "postsPerPage": 12,
+      "showExcerpt": true,
+      "excerptLength": 160,
+      "showAuthor": true,
+      "showDate": true,
+      "showCategory": true,
+      "showReadingTime": true,
+      "showFeaturedImage": true,
+      "gridColumns": 3
+    },
+    "single": {
+      "showAuthorBox": true,
+      "showRelatedPosts": true,
+      "showComments": true,
+      "showSocialShare": true,
+      "showTableOfContents": true,
+      "showPrevNext": true
+    },
+    "shop": {
+      "productsPerPage": 12,
+      "showFilters": true,
+      "showSorting": true,
+      "gridColumns": 4,
+      "showQuickView": true,
+      "showWishlist": true,
+      "showCompare": true
+    },
+    "social": {
+      "facebook": "",
+      "twitter": "",
+      "instagram": "",
+      "linkedin": "",
+      "youtube": "",
+      "github": "",
+      "discord": "",
+      "tiktok": ""
+    },
+    "analytics": {
+      "googleAnalyticsId": "",
+      "facebookPixelId": ""
+    },
+    "ads": {
+      "headerAd": "",
+      "sidebarAd": "",
+      "inArticleAd": "",
+      "footerAd": ""
+    }
+  },
+
+  "menus": {
+    "primary": {
+      "name": "Primary Menu",
+      "location": "header"
+    },
+    "secondary": {
+      "name": "Secondary Menu",
+      "location": "header-top"
+    },
+    "footer": {
+      "name": "Footer Menu",
+      "location": "footer"
+    },
+    "mobile": {
+      "name": "Mobile Menu",
+      "location": "mobile"
+    }
+  },
+
+  "widgetAreas": {
+    "sidebar": {
+      "name": "Main Sidebar",
+      "description": "Widgets displayed in the main sidebar"
+    },
+    "footer-1": {
+      "name": "Footer Column 1",
+      "description": "First footer widget area"
+    },
+    "footer-2": {
+      "name": "Footer Column 2",
+      "description": "Second footer widget area"
+    },
+    "footer-3": {
+      "name": "Footer Column 3",
+      "description": "Third footer widget area"
+    },
+    "footer-4": {
+      "name": "Footer Column 4",
+      "description": "Fourth footer widget area"
+    },
+    "header": {
+      "name": "Header Widget",
+      "description": "Widget area in header"
+    }
+  },
+
+  "templates": {
+    "home": "templates/home.html",
+    "page": "templates/page.html",
+    "single": "templates/single.html",
+    "archive": "templates/archive.html",
+    "category": "templates/category.html",
+    "tag": "templates/tag.html",
+    "author": "templates/author.html",
+    "search": "templates/search.html",
+    "404": "templates/404.html",
+    "product": "templates/product.html",
+    "shop": "templates/shop.html",
+    "cart": "templates/cart.html",
+    "checkout": "templates/checkout.html",
+    "contact": "templates/contact.html",
+    "about": "templates/about.html"
+  },
+
+  "assets": {
+    "css": [
+      "assets/css/style.css",
+      "assets/css/responsive.css",
+      "assets/css/dark-mode.css"
+    ],
+    "js": [
+      "assets/js/theme.js",
+      "assets/js/navigation.js",
+      "assets/js/search.js"
+    ]
+  },
+
+  "customizer": {
+    "sections": [
+      {
+        "id": "general",
+        "title": "General Settings",
+        "fields": [
+          {"id": "site_logo", "type": "image", "label": "Site Logo"},
+          {"id": "site_favicon", "type": "image", "label": "Favicon"},
+          {"id": "site_tagline", "type": "text", "label": "Site Tagline"}
+        ]
+      },
+      {
+        "id": "colors",
+        "title": "Color Settings",
+        "fields": [
+          {"id": "primary_color", "type": "color", "label": "Primary Color", "default": "#3B82F6"},
+          {"id": "secondary_color", "type": "color", "label": "Secondary Color", "default": "#8B5CF6"},
+          {"id": "accent_color", "type": "color", "label": "Accent Color", "default": "#10B981"}
+        ]
+      },
+      {
+        "id": "typography",
+        "title": "Typography",
+        "fields": [
+          {"id": "heading_font", "type": "font", "label": "Heading Font", "default": "Inter"},
+          {"id": "body_font", "type": "font", "label": "Body Font", "default": "Inter"},
+          {"id": "base_font_size", "type": "number", "label": "Base Font Size", "default": 16}
+        ]
+      },
+      {
+        "id": "header",
+        "title": "Header Settings",
+        "fields": [
+          {"id": "header_style", "type": "select", "label": "Header Style", "options": ["default", "centered", "minimal", "magazine"]},
+          {"id": "sticky_header", "type": "toggle", "label": "Sticky Header", "default": true},
+          {"id": "show_search", "type": "toggle", "label": "Show Search", "default": true}
+        ]
+      },
+      {
+        "id": "footer",
+        "title": "Footer Settings",
+        "fields": [
+          {"id": "footer_style", "type": "select", "label": "Footer Style", "options": ["default", "minimal", "centered", "dark"]},
+          {"id": "footer_columns", "type": "number", "label": "Footer Columns", "default": 4},
+          {"id": "copyright_text", "type": "text", "label": "Copyright Text"}
+        ]
+      },
+      {
+        "id": "blog",
+        "title": "Blog Settings",
+        "fields": [
+          {"id": "posts_per_page", "type": "number", "label": "Posts Per Page", "default": 12},
+          {"id": "blog_layout", "type": "select", "label": "Blog Layout", "options": ["grid", "list", "masonry", "magazine"]},
+          {"id": "show_sidebar", "type": "toggle", "label": "Show Sidebar", "default": true}
+        ]
+      }
+    ]
+  }
+}

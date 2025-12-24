@@ -1,0 +1,669 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Search Results for "{{ query }}" | {{ site.name }}{% endblock %}
+{% block description %}Search results for "{{ query }}" on {{ site.name }}.{% endblock %}
+
+{% block body_class %}page-search{% endblock %}
+
+{% block content %}
+<div class="container">
+  {# Breadcrumbs #}
+  {% if theme.breadcrumbs.enabled | default(value=true) %}
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+    <a href="/">Home</a>
+    <span class="separator">/</span>
+    <span class="current">Search</span>
+  </nav>
+  {% endif %}
+
+  {# Search Header #}
+  <header class="search-header">
+    <h1 class="search-title">
+      {% if query %}
+      Search Results for "<span class="search-query">{{ query }}</span>"
+      {% else %}
+      Search
+      {% endif %}
+    </h1>
+    {% if results | length > 0 %}
+    <p class="search-meta">Found {{ pagination.total }} result{% if pagination.total != 1 %}s{% endif %}</p>
+    {% endif %}
+  </header>
+
+  {# Search Form #}
+  <div class="search-form-wrapper">
+    <form action="/search" method="GET" class="search-form-large">
+      <div class="search-input-wrapper">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input type="search" name="q" value="{{ query }}" placeholder="Search articles, products, and more..." aria-label="Search" autofocus>
+        <button type="submit" class="btn btn--primary">Search</button>
+      </div>
+    </form>
+
+    {# Search Filters #}
+    {% if query %}
+    <div class="search-filters">
+      <span class="filter-label">Filter by:</span>
+      <div class="filter-tabs" role="tablist">
+        <button class="filter-tab {% if filter == 'all' or not filter %}active{% endif %}" data-filter="all" role="tab" aria-selected="{{ 'true' if filter == 'all' or not filter else 'false' }}">
+          All ({{ counts.all | default(value=pagination.total) }})
+        </button>
+        <button class="filter-tab {% if filter == 'posts' %}active{% endif %}" data-filter="posts" role="tab" aria-selected="{{ 'true' if filter == 'posts' else 'false' }}">
+          Articles ({{ counts.posts | default(value=0) }})
+        </button>
+        <button class="filter-tab {% if filter == 'products' %}active{% endif %}" data-filter="products" role="tab" aria-selected="{{ 'true' if filter == 'products' else 'false' }}">
+          Products ({{ counts.products | default(value=0) }})
+        </button>
+        <button class="filter-tab {% if filter == 'pages' %}active{% endif %}" data-filter="pages" role="tab" aria-selected="{{ 'true' if filter == 'pages' else 'false' }}">
+          Pages ({{ counts.pages | default(value=0) }})
+        </button>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  {# Search Results #}
+  {% if query %}
+  <div class="search-results-wrapper">
+    {% if results | length > 0 %}
+    <div class="search-results">
+      {% for result in results %}
+      <article class="search-result-item {% if result.type == 'product' %}search-result--product{% endif %}">
+        {% if result.featured_image or result.image %}
+        <a href="{{ result.url }}" class="search-result-image">
+          <img src="{{ result.featured_image | default(value=result.image) }}" alt="{{ result.title }}" loading="lazy">
+        </a>
+        {% endif %}
+        <div class="search-result-content">
+          <div class="search-result-meta">
+            <span class="result-type result-type--{{ result.type | default(value='post') }}">
+              {{ result.type | default(value='Article') | capitalize }}
+            </span>
+            {% if result.category %}
+            <span class="result-category">{{ result.category.name }}</span>
+            {% endif %}
+            {% if result.date %}
+            <span class="result-date">{{ result.date | date(format='%B %d, %Y') }}</span>
+            {% endif %}
+          </div>
+          <h2 class="search-result-title">
+            <a href="{{ result.url }}">{{ result.title }}</a>
+          </h2>
+          {% if result.excerpt %}
+          <p class="search-result-excerpt">{{ result.excerpt | striptags | truncate(length=200) }}</p>
+          {% endif %}
+          <div class="search-result-footer">
+            {% if result.type == 'product' and result.price %}
+            <span class="result-price">
+              {% if result.sale_price %}
+              <span class="price-sale">{{ result.sale_price | format_currency }}</span>
+              <span class="price-original">{{ result.price | format_currency }}</span>
+              {% else %}
+              {{ result.price | format_currency }}
+              {% endif %}
+            </span>
+            {% endif %}
+            {% if result.author %}
+            <span class="result-author">by {{ result.author.name }}</span>
+            {% endif %}
+            <a href="{{ result.url }}" class="btn btn--ghost btn--sm">
+              {% if result.type == 'product' %}View Product{% else %}Read More{% endif %}
+            </a>
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+
+    {# Pagination #}
+    {% if pagination.total_pages > 1 %}
+    <nav class="pagination" aria-label="Search results pagination">
+      {% if pagination.has_prev %}
+      <a href="/search?q={{ query }}&page={{ pagination.current - 1 }}" class="pagination-prev" aria-label="Previous page">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </a>
+      {% endif %}
+
+      {% for page in pagination.pages %}
+      {% if page == '...' %}
+      <span class="dots">...</span>
+      {% elif page == pagination.current %}
+      <span class="current" aria-current="page">{{ page }}</span>
+      {% else %}
+      <a href="/search?q={{ query }}&page={{ page }}">{{ page }}</a>
+      {% endif %}
+      {% endfor %}
+
+      {% if pagination.has_next %}
+      <a href="/search?q={{ query }}&page={{ pagination.current + 1 }}" class="pagination-next" aria-label="Next page">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </a>
+      {% endif %}
+    </nav>
+    {% endif %}
+
+    {% else %}
+    {# No Results #}
+    <div class="no-results">
+      <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="8" y1="8" x2="14" y2="14"></line><line x1="14" y1="8" x2="8" y2="14"></line></svg>
+      <h2>No results found</h2>
+      <p>We couldn't find anything matching "<strong>{{ query }}</strong>".</p>
+      <p class="no-results-suggestions">Try different keywords or browse our popular content below.</p>
+    </div>
+    {% endif %}
+  </div>
+
+  {% else %}
+  {# Empty Search State #}
+  <div class="search-empty-state">
+    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+    <h2>What are you looking for?</h2>
+    <p>Enter a search term above to find articles, products, and pages.</p>
+  </div>
+  {% endif %}
+
+  {# Popular/Suggested Content #}
+  {% if not query or results | length == 0 %}
+  <section class="search-suggestions">
+    {# Popular Searches #}
+    {% if popular_searches | length > 0 %}
+    <div class="suggestion-section">
+      <h3>Popular Searches</h3>
+      <div class="popular-searches">
+        {% for term in popular_searches %}
+        <a href="/search?q={{ term | urlencode }}" class="search-tag">{{ term }}</a>
+        {% endfor %}
+      </div>
+    </div>
+    {% else %}
+    <div class="suggestion-section">
+      <h3>Popular Searches</h3>
+      <div class="popular-searches">
+        <a href="/search?q=tutorial" class="search-tag">Tutorial</a>
+        <a href="/search?q=guide" class="search-tag">Guide</a>
+        <a href="/search?q=review" class="search-tag">Review</a>
+        <a href="/search?q=tips" class="search-tag">Tips</a>
+        <a href="/search?q=best" class="search-tag">Best</a>
+      </div>
+    </div>
+    {% endif %}
+
+    {# Featured Content #}
+    <div class="suggestion-section">
+      <h3>Featured Content</h3>
+      <div class="featured-suggestions">
+        {% for post in featured_posts | slice(end=3) %}
+        <article class="suggestion-card">
+          {% if post.featured_image %}
+          <a href="{{ post.url }}" class="suggestion-card-image">
+            <img src="{{ post.featured_image }}" alt="{{ post.title }}" loading="lazy">
+          </a>
+          {% endif %}
+          <div class="suggestion-card-content">
+            <h4><a href="{{ post.url }}">{{ post.title }}</a></h4>
+            <span class="suggestion-card-meta">{{ post.date | date(format='%B %d, %Y') }}</span>
+          </div>
+        </article>
+        {% else %}
+        <p class="no-suggestions">Start searching to discover our content!</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    {# Browse Categories #}
+    <div class="suggestion-section">
+      <h3>Browse by Category</h3>
+      <div class="category-suggestions">
+        {% for category in categories | slice(end=6) %}
+        <a href="{{ category.url }}" class="category-tag">
+          {{ category.name }}
+          <span class="category-count">{{ category.post_count }}</span>
+        </a>
+        {% else %}
+        <a href="/categories" class="category-tag">View All Categories</a>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+/* Search Page Styles */
+.search-header {
+  text-align: center;
+  padding: var(--space-10) 0;
+  margin-bottom: var(--space-6);
+}
+
+.search-title {
+  font-size: var(--text-3xl);
+  margin-bottom: var(--space-2);
+}
+
+.search-query {
+  color: var(--color-primary);
+}
+
+.search-meta {
+  color: var(--text-secondary);
+}
+
+/* Search Form */
+.search-form-wrapper {
+  max-width: 800px;
+  margin: 0 auto var(--space-8);
+}
+
+.search-form-large {
+  margin-bottom: var(--space-6);
+}
+
+.search-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  background-color: var(--bg-secondary);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  transition: border-color var(--transition-fast);
+}
+
+.search-input-wrapper:focus-within {
+  border-color: var(--color-primary);
+}
+
+.search-input-wrapper svg {
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+
+.search-input-wrapper input {
+  flex: 1;
+  border: none;
+  background: none;
+  font-size: var(--text-lg);
+  padding: var(--space-2);
+}
+
+.search-input-wrapper input:focus {
+  outline: none;
+}
+
+/* Search Filters */
+.search-filters {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.filter-label {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.filter-tabs {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.filter-tab {
+  padding: var(--space-2) var(--space-4);
+  background: none;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.filter-tab:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.filter-tab.active {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--text-inverse);
+}
+
+/* Search Results */
+.search-results {
+  margin-bottom: var(--space-8);
+}
+
+.search-result-item {
+  display: flex;
+  gap: var(--space-6);
+  padding: var(--space-6);
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  margin-bottom: var(--space-4);
+  transition: box-shadow var(--transition-base);
+}
+
+.search-result-item:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.search-result-image {
+  flex-shrink: 0;
+  width: 200px;
+  height: 150px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.search-result-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.search-result-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.search-result-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.result-type {
+  display: inline-block;
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  text-transform: uppercase;
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
+}
+
+.result-type--post {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.result-type--product {
+  background-color: var(--color-success-light);
+  color: var(--color-success);
+}
+
+.result-type--page {
+  background-color: var(--color-secondary-light);
+  color: var(--color-secondary);
+}
+
+.result-category {
+  font-size: var(--text-sm);
+  color: var(--color-primary);
+}
+
+.result-date {
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+}
+
+.search-result-title {
+  font-size: var(--text-xl);
+  margin-bottom: var(--space-2);
+}
+
+.search-result-title a {
+  color: var(--text-primary);
+}
+
+.search-result-title a:hover {
+  color: var(--color-primary);
+}
+
+.search-result-excerpt {
+  color: var(--text-secondary);
+  font-size: var(--text-base);
+  margin-bottom: var(--space-4);
+  flex: 1;
+}
+
+.search-result-footer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.result-price {
+  font-weight: var(--font-semibold);
+  color: var(--color-primary);
+}
+
+.result-price .price-sale {
+  color: var(--color-error);
+}
+
+.result-price .price-original {
+  text-decoration: line-through;
+  color: var(--text-tertiary);
+  font-weight: var(--font-normal);
+  margin-left: var(--space-2);
+}
+
+.result-author {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+/* No Results */
+.no-results,
+.search-empty-state {
+  text-align: center;
+  padding: var(--space-16) var(--space-6);
+}
+
+.no-results svg,
+.search-empty-state svg {
+  color: var(--text-tertiary);
+  margin-bottom: var(--space-6);
+}
+
+.no-results h2,
+.search-empty-state h2 {
+  font-size: var(--text-2xl);
+  margin-bottom: var(--space-3);
+}
+
+.no-results p,
+.search-empty-state p {
+  color: var(--text-secondary);
+  margin-bottom: var(--space-2);
+}
+
+.no-results-suggestions {
+  font-size: var(--text-sm);
+}
+
+/* Search Suggestions */
+.search-suggestions {
+  padding: var(--space-10) 0;
+  border-top: 1px solid var(--border-color);
+  margin-top: var(--space-8);
+}
+
+.suggestion-section {
+  margin-bottom: var(--space-10);
+}
+
+.suggestion-section h3 {
+  font-size: var(--text-lg);
+  margin-bottom: var(--space-4);
+}
+
+.popular-searches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.search-tag {
+  display: inline-block;
+  padding: var(--space-2) var(--space-4);
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
+  border-radius: var(--radius-full);
+  font-size: var(--text-sm);
+  transition: all var(--transition-fast);
+}
+
+.search-tag:hover {
+  background-color: var(--color-primary);
+  color: var(--text-inverse);
+}
+
+/* Featured Suggestions */
+.featured-suggestions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-6);
+}
+
+.suggestion-card {
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.suggestion-card-image {
+  display: block;
+  aspect-ratio: 16/9;
+  overflow: hidden;
+}
+
+.suggestion-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-base);
+}
+
+.suggestion-card:hover .suggestion-card-image img {
+  transform: scale(1.05);
+}
+
+.suggestion-card-content {
+  padding: var(--space-4);
+}
+
+.suggestion-card h4 {
+  font-size: var(--text-base);
+  margin-bottom: var(--space-1);
+}
+
+.suggestion-card h4 a {
+  color: var(--text-primary);
+}
+
+.suggestion-card h4 a:hover {
+  color: var(--color-primary);
+}
+
+.suggestion-card-meta {
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+}
+
+/* Category Suggestions */
+.category-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.category-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  transition: all var(--transition-fast);
+}
+
+.category-tag:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.category-count {
+  background-color: var(--bg-tertiary);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  color: var(--text-secondary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .search-result-item {
+    flex-direction: column;
+  }
+
+  .search-result-image {
+    width: 100%;
+    height: 200px;
+  }
+
+  .featured-suggestions {
+    grid-template-columns: 1fr;
+  }
+
+  .search-input-wrapper {
+    flex-wrap: wrap;
+  }
+
+  .search-input-wrapper button {
+    width: 100%;
+  }
+}
+</style>
+
+<script>
+// Filter tab functionality
+document.querySelectorAll('.filter-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const filter = tab.dataset.filter;
+    const url = new URL(window.location);
+
+    if (filter === 'all') {
+      url.searchParams.delete('filter');
+    } else {
+      url.searchParams.set('filter', filter);
+    }
+
+    window.location.href = url.toString();
+  });
+});
+
+// Auto-submit on enter
+document.querySelector('.search-form-large input')?.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    e.target.closest('form').submit();
+  }
+});
+</script>
+{% endblock %}

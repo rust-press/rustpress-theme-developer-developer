@@ -1,0 +1,225 @@
+name: Release Theme
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      version_bump:
+        description: 'Version bump type'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - major
+          - minor
+          - patch
+
+env:
+  THEME_NAME: developer-developer
+
+jobs:
+  validate:
+    name: Validate Theme
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate theme.json
+        run: |
+          if [ ! -f "theme.json" ]; then
+            echo "Error: theme.json not found"
+            exit 1
+          fi
+          python3 -c "import json; json.load(open('theme.json'))"
+          echo "theme.json is valid JSON"
+
+      - name: Check required files
+        run: |
+          required_files=("theme.json" "README.md")
+          required_dirs=("templates" "assets")
+
+          for file in "${required_files[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "Error: Required file $file not found"
+              exit 1
+            fi
+          done
+
+          for dir in "${required_dirs[@]}"; do
+            if [ ! -d "$dir" ]; then
+              echo "Error: Required directory $dir not found"
+              exit 1
+            fi
+          done
+
+          echo "All required files and directories present"
+
+      - name: Validate templates
+        run: |
+          template_count=$(find templates -name "*.html" -o -name "*.hbs" | wc -l)
+          echo "Found $template_count template files"
+          if [ "$template_count" -eq 0 ]; then
+            echo "Warning: No template files found"
+          fi
+
+  release:
+    name: Create Release
+    needs: validate
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get current version
+        id: current_version
+        run: |
+          if [ -f "theme.json" ]; then
+            VERSION=$(python3 -c "import json; print(json.load(open('theme.json')).get('version', '0.1.0'))")
+          else
+            VERSION="0.1.0"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Current version: $VERSION"
+
+      - name: Determine version bump
+        id: bump
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            BUMP="${{ github.event.inputs.version_bump }}"
+          else
+            COMMITS=$(git log --format=%B -n 10)
+
+            if echo "$COMMITS" | grep -qiE "(BREAKING CHANGE|^[a-z]+(\([^)]+\))?!:)"; then
+              BUMP="major"
+            elif echo "$COMMITS" | grep -qiE "^\[major\]|#major"; then
+              BUMP="major"
+            elif echo "$COMMITS" | grep -qiE "^feat(\([^)]+\))?:"; then
+              BUMP="minor"
+            elif echo "$COMMITS" | grep -qiE "^\[minor\]|#minor"; then
+              BUMP="minor"
+            else
+              BUMP="patch"
+            fi
+          fi
+
+          echo "bump=$BUMP" >> $GITHUB_OUTPUT
+          echo "Version bump: $BUMP"
+
+      - name: Calculate new version
+        id: new_version
+        run: |
+          VERSION="${{ steps.current_version.outputs.version }}"
+          BUMP="${{ steps.bump.outputs.bump }}"
+
+          IFS='.' read -ra PARTS <<< "$VERSION"
+          MAJOR=${PARTS[0]:-0}
+          MINOR=${PARTS[1]:-0}
+          PATCH=${PARTS[2]:-0}
+
+          case $BUMP in
+            major)
+              MAJOR=$((MAJOR + 1))
+              MINOR=0
+              PATCH=0
+              ;;
+            minor)
+              MINOR=$((MINOR + 1))
+              PATCH=0
+              ;;
+            patch)
+              PATCH=$((PATCH + 1))
+              ;;
+          esac
+
+          NEW_VERSION="${MAJOR}.${MINOR}.${PATCH}"
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "New version: $NEW_VERSION"
+
+      - name: Update theme.json version
+        run: |
+          python3 << 'EOF'
+          import json
+          with open('theme.json', 'r') as f:
+              data = json.load(f)
+          data['version'] = '${{ steps.new_version.outputs.version }}'
+          with open('theme.json', 'w') as f:
+              json.dump(data, f, indent=2)
+          EOF
+
+      - name: Create theme package
+        run: |
+          VERSION="${{ steps.new_version.outputs.version }}"
+          PACKAGE_NAME="${{ env.THEME_NAME }}-${VERSION}"
+
+          mkdir -p dist
+
+          # Create ZIP for all platforms (themes are platform-independent)
+          zip -r "dist/${PACKAGE_NAME}.zip" \
+            theme.json \
+            README.md \
+            templates/ \
+            assets/ \
+            -x "*.git*" \
+            -x "*.github*" \
+            -x "dist/*"
+
+          # Create checksums
+          cd dist
+          sha256sum "${PACKAGE_NAME}.zip" > "${PACKAGE_NAME}.sha256"
+
+          echo "Created packages:"
+          ls -la
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          echo "## Changes in v${{ steps.new_version.outputs.version }}" > CHANGELOG.md
+          echo "" >> CHANGELOG.md
+
+          PREV_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+
+          if [ -n "$PREV_TAG" ]; then
+            git log ${PREV_TAG}..HEAD --pretty=format:"- %s" >> CHANGELOG.md
+          else
+            git log --pretty=format:"- %s" -n 20 >> CHANGELOG.md
+          fi
+
+          echo "" >> CHANGELOG.md
+          echo "" >> CHANGELOG.md
+          echo "### Installation" >> CHANGELOG.md
+          echo "" >> CHANGELOG.md
+          echo "1. Download \`${{ env.THEME_NAME }}-${{ steps.new_version.outputs.version }}.zip\`" >> CHANGELOG.md
+          echo "2. Extract to your RustPress themes directory" >> CHANGELOG.md
+          echo "3. Activate in the admin panel" >> CHANGELOG.md
+
+          cat CHANGELOG.md
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ steps.new_version.outputs.version }}
+          name: ${{ env.THEME_NAME }} v${{ steps.new_version.outputs.version }}
+          body_path: CHANGELOG.md
+          files: |
+            dist/*.zip
+            dist/*.sha256
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Commit version update
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add theme.json
+          git commit -m "chore: bump version to ${{ steps.new_version.outputs.version }}" || true
+          git push || true

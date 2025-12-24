@@ -1,0 +1,431 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}{% if category %}{{ category.name }} - {% endif %}Shop | {{ site.name }}{% endblock %}
+
+{% block body_class %}page-shop{% endblock %}
+
+{% block content %}
+<div class="container">
+  {# Breadcrumbs #}
+  {% if theme.breadcrumbs.enabled | default(value=true) %}
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+    <a href="/">Home</a>
+    <span class="separator">/</span>
+    <a href="/shop">Shop</a>
+    {% if category %}
+    <span class="separator">/</span>
+    <span class="current">{{ category.name }}</span>
+    {% endif %}
+  </nav>
+  {% endif %}
+
+  {# Shop Header #}
+  <header class="shop-page-header">
+    <h1 class="shop-title">{% if category %}{{ category.name }}{% else %}Shop{% endif %}</h1>
+    {% if category and category.description %}
+    <p class="shop-description">{{ category.description }}</p>
+    {% else %}
+    <p class="shop-description">Discover our curated collection of products.</p>
+    {% endif %}
+  </header>
+
+  {# Shop Layout #}
+  <div class="shop-layout">
+    {# Sidebar Filters #}
+    {% if theme.shop.show_filters | default(value=true) %}
+    <aside class="shop-sidebar">
+      <div class="shop-filters">
+        {# Categories Filter #}
+        <div class="filter-group">
+          <h3 class="filter-title">Categories</h3>
+          <ul class="filter-list">
+            <li>
+              <label>
+                <input type="checkbox" name="category" value="all" {% if not category %}checked{% endif %}>
+                All Products
+              </label>
+            </li>
+            {% for cat in product_categories %}
+            <li>
+              <label>
+                <input type="checkbox" name="category" value="{{ cat.slug }}" {% if category and category.slug == cat.slug %}checked{% endif %}>
+                {{ cat.name }} ({{ cat.count }})
+              </label>
+            </li>
+            {% else %}
+            <li><label><input type="checkbox"> Electronics (24)</label></li>
+            <li><label><input type="checkbox"> Clothing (18)</label></li>
+            <li><label><input type="checkbox"> Accessories (15)</label></li>
+            <li><label><input type="checkbox"> Digital (10)</label></li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        {# Price Filter #}
+        <div class="filter-group">
+          <h3 class="filter-title">Price Range</h3>
+          <div class="price-range">
+            <input type="number" name="min_price" placeholder="Min" min="0">
+            <span>-</span>
+            <input type="number" name="max_price" placeholder="Max" min="0">
+          </div>
+          <div class="price-presets">
+            <button type="button" class="price-preset" data-min="0" data-max="25">Under $25</button>
+            <button type="button" class="price-preset" data-min="25" data-max="50">$25 - $50</button>
+            <button type="button" class="price-preset" data-min="50" data-max="100">$50 - $100</button>
+            <button type="button" class="price-preset" data-min="100" data-max="">$100+</button>
+          </div>
+        </div>
+
+        {# Rating Filter #}
+        <div class="filter-group">
+          <h3 class="filter-title">Rating</h3>
+          <ul class="filter-list">
+            {% for stars in [5, 4, 3, 2, 1] %}
+            <li>
+              <label>
+                <input type="checkbox" name="rating" value="{{ stars }}">
+                <span class="stars">{% for i in range(end=stars) %}★{% endfor %}{% for i in range(end=5-stars) %}☆{% endfor %}</span>
+                & up
+              </label>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        {# Availability Filter #}
+        <div class="filter-group">
+          <h3 class="filter-title">Availability</h3>
+          <ul class="filter-list">
+            <li>
+              <label>
+                <input type="checkbox" name="in_stock" value="1">
+                In Stock
+              </label>
+            </li>
+            <li>
+              <label>
+                <input type="checkbox" name="on_sale" value="1">
+                On Sale
+              </label>
+            </li>
+          </ul>
+        </div>
+
+        {# Apply Filters Button #}
+        <button type="button" class="btn btn--primary btn--block" id="apply-filters">Apply Filters</button>
+        <button type="button" class="btn btn--ghost btn--block" id="clear-filters">Clear All</button>
+      </div>
+    </aside>
+    {% endif %}
+
+    {# Products Area #}
+    <div class="shop-main">
+      {# Shop Toolbar #}
+      <div class="shop-header">
+        <span class="shop-result-count">
+          Showing {{ pagination.start | default(value=1) }}-{{ pagination.end | default(value=12) }} of {{ pagination.total | default(value=48) }} products
+        </span>
+
+        <div class="shop-sorting">
+          {# Sort Dropdown #}
+          <div class="sort-dropdown">
+            <label for="shop-sort" class="sr-only">Sort by</label>
+            <select id="shop-sort" class="form-select">
+              <option value="featured" {% if sort == 'featured' %}selected{% endif %}>Featured</option>
+              <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest</option>
+              <option value="price-asc" {% if sort == 'price-asc' %}selected{% endif %}>Price: Low to High</option>
+              <option value="price-desc" {% if sort == 'price-desc' %}selected{% endif %}>Price: High to Low</option>
+              <option value="rating" {% if sort == 'rating' %}selected{% endif %}>Top Rated</option>
+              <option value="bestselling" {% if sort == 'bestselling' %}selected{% endif %}>Best Selling</option>
+            </select>
+          </div>
+
+          {# View Toggle #}
+          <div class="shop-view-toggle">
+            <button class="active" data-view="grid" aria-label="Grid view">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            </button>
+            <button data-view="list" aria-label="List view">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {# Products Grid #}
+      {% if products | length > 0 %}
+      <div class="products-grid" id="products-container">
+        {% for product in products %}
+        <article class="product-card">
+          <div class="product-image">
+            <a href="{{ product.url }}">
+              <img src="{{ product.image | default(value='/images/placeholder-product.jpg') }}" alt="{{ product.name }}" loading="lazy">
+            </a>
+            <div class="product-badges">
+              {% if product.on_sale %}
+              <span class="product-badge product-badge--sale">
+                {% if product.discount_percent %}-{{ product.discount_percent }}%{% else %}Sale{% endif %}
+              </span>
+              {% endif %}
+              {% if product.is_new %}
+              <span class="product-badge product-badge--new">New</span>
+              {% endif %}
+              {% if product.stock == 0 %}
+              <span class="product-badge product-badge--soldout">Sold Out</span>
+              {% endif %}
+            </div>
+            <div class="product-actions">
+              <button class="product-action-btn" aria-label="Quick view" data-quick-view="{{ product.id }}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              </button>
+              <button class="product-action-btn" aria-label="Add to wishlist" data-wishlist="{{ product.id }}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+              </button>
+              <button class="product-action-btn" aria-label="Add to cart" data-add-to-cart="{{ product.id }}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+              </button>
+            </div>
+          </div>
+          <div class="product-content">
+            <span class="product-category">{{ product.category }}</span>
+            <h3 class="product-title">
+              <a href="{{ product.url }}">{{ product.name }}</a>
+            </h3>
+            <div class="product-rating">
+              <span class="stars">{% for i in range(end=product.rating | default(value=5) | int) %}★{% endfor %}{% for i in range(end=5 - (product.rating | default(value=5) | int)) %}☆{% endfor %}</span>
+              <span class="count">({{ product.reviews_count | default(value=0) }})</span>
+            </div>
+            <div class="product-price">
+              {% if product.sale_price %}
+              <span class="current-price">${{ product.sale_price }}</span>
+              <span class="original-price">${{ product.price }}</span>
+              {% else %}
+              <span class="current-price">${{ product.price }}</span>
+              {% endif %}
+            </div>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+      {% else %}
+      {# Placeholder products #}
+      <div class="products-grid" id="products-container">
+        {% for i in range(end=8) %}
+        <article class="product-card">
+          <div class="product-image">
+            <a href="/shop/product-{{ i + 1 }}">
+              <img src="/images/placeholder-product.jpg" alt="Sample Product" loading="lazy">
+            </a>
+            {% if i == 0 or i == 3 %}
+            <div class="product-badges">
+              <span class="product-badge product-badge--sale">-20%</span>
+            </div>
+            {% endif %}
+            {% if i == 1 %}
+            <div class="product-badges">
+              <span class="product-badge product-badge--new">New</span>
+            </div>
+            {% endif %}
+            <div class="product-actions">
+              <button class="product-action-btn" aria-label="Quick view">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              </button>
+              <button class="product-action-btn" aria-label="Add to wishlist">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+              </button>
+              <button class="product-action-btn" aria-label="Add to cart">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+              </button>
+            </div>
+          </div>
+          <div class="product-content">
+            <span class="product-category">Category</span>
+            <h3 class="product-title">
+              <a href="/shop/product-{{ i + 1 }}">Sample Product Name {{ i + 1 }}</a>
+            </h3>
+            <div class="product-rating">
+              <span class="stars">★★★★☆</span>
+              <span class="count">({{ 10 + i * 5 }})</span>
+            </div>
+            <div class="product-price">
+              {% if i == 0 or i == 3 %}
+              <span class="current-price">${{ 29 + i * 10 }}.99</span>
+              <span class="original-price">${{ 39 + i * 10 }}.99</span>
+              {% else %}
+              <span class="current-price">${{ 39 + i * 10 }}.99</span>
+              {% endif %}
+            </div>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {# Pagination #}
+      {% if pagination.total_pages | default(value=4) > 1 %}
+      <nav class="pagination" aria-label="Products pagination">
+        <a href="?page=1" class="pagination-prev" aria-label="Previous page">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </a>
+        <a href="?page=1">1</a>
+        <span class="current" aria-current="page">2</span>
+        <a href="?page=3">3</a>
+        <a href="?page=4">4</a>
+        <a href="?page=3" class="pagination-next" aria-label="Next page">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </a>
+      </nav>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+/* Shop Layout */
+.shop-page-header {
+  text-align: center;
+  padding: var(--space-10) 0;
+  margin-bottom: var(--space-6);
+}
+
+.shop-title {
+  font-size: var(--text-4xl);
+  margin-bottom: var(--space-3);
+}
+
+.shop-description {
+  font-size: var(--text-lg);
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.shop-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: var(--space-8);
+}
+
+/* Shop Sidebar */
+.shop-sidebar {
+  position: sticky;
+  top: calc(var(--header-height) + var(--space-4));
+  max-height: calc(100vh - var(--header-height) - var(--space-8));
+  overflow-y: auto;
+}
+
+.shop-filters {
+  background-color: var(--bg-secondary);
+  padding: var(--space-6);
+  border-radius: var(--radius-xl);
+}
+
+.price-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.price-preset {
+  padding: var(--space-1) var(--space-3);
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.price-preset:hover,
+.price-preset.active {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--text-inverse);
+}
+
+.filter-list .stars {
+  color: var(--color-warning);
+}
+
+#apply-filters {
+  margin-top: var(--space-4);
+}
+
+#clear-filters {
+  margin-top: var(--space-2);
+}
+
+/* Sold Out Badge */
+.product-badge--soldout {
+  background-color: var(--color-gray-600);
+  color: var(--color-white);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .shop-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .shop-sidebar {
+    position: relative;
+    top: 0;
+    max-height: none;
+  }
+
+  .shop-filters {
+    display: none;
+  }
+
+  .shop-filters.active {
+    display: block;
+  }
+}
+</style>
+
+<script>
+// Price preset buttons
+document.querySelectorAll('.price-preset').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const minInput = document.querySelector('input[name="min_price"]');
+    const maxInput = document.querySelector('input[name="max_price"]');
+
+    minInput.value = btn.dataset.min;
+    maxInput.value = btn.dataset.max;
+
+    document.querySelectorAll('.price-preset').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+// Sort dropdown
+document.getElementById('shop-sort')?.addEventListener('change', function() {
+  const url = new URL(window.location);
+  url.searchParams.set('sort', this.value);
+  window.location.href = url.toString();
+});
+
+// View toggle
+document.querySelectorAll('.shop-view-toggle button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const view = btn.dataset.view;
+    const container = document.getElementById('products-container');
+
+    document.querySelectorAll('.shop-view-toggle button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    if (view === 'list') {
+      container.classList.remove('products-grid');
+      container.classList.add('products-list');
+    } else {
+      container.classList.add('products-grid');
+      container.classList.remove('products-list');
+    }
+  });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,692 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Contact Us | {{ site.name }}{% endblock %}
+{% block description %}Get in touch with us. We'd love to hear from you.{% endblock %}
+
+{% block body_class %}page-contact{% endblock %}
+
+{% block content %}
+{# Hero Section #}
+<section class="contact-hero">
+  <div class="container">
+    <span class="page-subtitle">Contact Us</span>
+    <h1 class="page-title">{{ page.title | default(value='Get in Touch') }}</h1>
+    <p class="page-description">{{ page.subtitle | default(value='Have a question or want to work together? We\'d love to hear from you.') }}</p>
+  </div>
+</section>
+
+<div class="container">
+  <div class="contact-wrapper">
+    {# Contact Form #}
+    <div class="contact-form-section">
+      <h2>Send Us a Message</h2>
+      <form id="contact-form" class="contact-form" method="POST" action="{{ contact.form_action | default(value='/api/contact') }}">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="contact-name">Full Name <span class="required">*</span></label>
+            <input type="text" id="contact-name" name="name" required placeholder="John Doe">
+          </div>
+          <div class="form-group">
+            <label for="contact-email">Email Address <span class="required">*</span></label>
+            <input type="email" id="contact-email" name="email" required placeholder="john@example.com">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="contact-phone">Phone Number</label>
+            <input type="tel" id="contact-phone" name="phone" placeholder="+1 (555) 123-4567">
+          </div>
+          <div class="form-group">
+            <label for="contact-subject">Subject <span class="required">*</span></label>
+            <select id="contact-subject" name="subject" required>
+              <option value="">Select a subject</option>
+              <option value="general">General Inquiry</option>
+              <option value="support">Technical Support</option>
+              <option value="business">Business Partnership</option>
+              <option value="feedback">Feedback</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="contact-message">Message <span class="required">*</span></label>
+          <textarea id="contact-message" name="message" rows="6" required placeholder="Tell us how we can help you..."></textarea>
+        </div>
+
+        <div class="form-group form-checkbox">
+          <input type="checkbox" id="contact-privacy" name="privacy" required>
+          <label for="contact-privacy">I agree to the <a href="/privacy-policy">Privacy Policy</a> and consent to being contacted.</label>
+        </div>
+
+        <button type="submit" class="btn btn--primary btn--lg">
+          <span class="btn-text">Send Message</span>
+          <span class="btn-loading" hidden>
+            <svg class="spinner" viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round" stroke-dasharray="32" stroke-dashoffset="12"></circle></svg>
+            Sending...
+          </span>
+        </button>
+
+        <div class="form-message" hidden></div>
+      </form>
+    </div>
+
+    {# Contact Info Sidebar #}
+    <aside class="contact-info-section">
+      <div class="contact-info-card">
+        <h3>Contact Information</h3>
+        <p>Feel free to reach out through any of the following channels:</p>
+
+        <ul class="contact-info-list">
+          {% if contact.email %}
+          <li class="contact-info-item">
+            <div class="contact-info-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            </div>
+            <div>
+              <strong>Email</strong>
+              <a href="mailto:{{ contact.email }}">{{ contact.email }}</a>
+            </div>
+          </li>
+          {% else %}
+          <li class="contact-info-item">
+            <div class="contact-info-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            </div>
+            <div>
+              <strong>Email</strong>
+              <a href="mailto:hello@example.com">hello@example.com</a>
+            </div>
+          </li>
+          {% endif %}
+
+          {% if contact.phone %}
+          <li class="contact-info-item">
+            <div class="contact-info-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+            </div>
+            <div>
+              <strong>Phone</strong>
+              <a href="tel:{{ contact.phone }}">{{ contact.phone }}</a>
+            </div>
+          </li>
+          {% else %}
+          <li class="contact-info-item">
+            <div class="contact-info-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+            </div>
+            <div>
+              <strong>Phone</strong>
+              <a href="tel:+15551234567">+1 (555) 123-4567</a>
+            </div>
+          </li>
+          {% endif %}
+
+          {% if contact.address %}
+          <li class="contact-info-item">
+            <div class="contact-info-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            </div>
+            <div>
+              <strong>Address</strong>
+              <address>{{ contact.address }}</address>
+            </div>
+          </li>
+          {% else %}
+          <li class="contact-info-item">
+            <div class="contact-info-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            </div>
+            <div>
+              <strong>Address</strong>
+              <address>123 Business Street<br>Suite 100<br>San Francisco, CA 94102</address>
+            </div>
+          </li>
+          {% endif %}
+        </ul>
+
+        {# Business Hours #}
+        <div class="business-hours">
+          <h4>Business Hours</h4>
+          <ul>
+            <li><span>Monday - Friday</span><span>{{ contact.hours_weekday | default(value='9:00 AM - 6:00 PM') }}</span></li>
+            <li><span>Saturday</span><span>{{ contact.hours_saturday | default(value='10:00 AM - 4:00 PM') }}</span></li>
+            <li><span>Sunday</span><span>{{ contact.hours_sunday | default(value='Closed') }}</span></li>
+          </ul>
+        </div>
+
+        {# Social Links #}
+        <div class="contact-social">
+          <h4>Follow Us</h4>
+          <div class="social-links">
+            {% if site.social.twitter %}
+            <a href="{{ site.social.twitter }}" target="_blank" rel="noopener" aria-label="Twitter">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </a>
+            {% endif %}
+            {% if site.social.facebook %}
+            <a href="{{ site.social.facebook }}" target="_blank" rel="noopener" aria-label="Facebook">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            </a>
+            {% endif %}
+            {% if site.social.linkedin %}
+            <a href="{{ site.social.linkedin }}" target="_blank" rel="noopener" aria-label="LinkedIn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            </a>
+            {% endif %}
+            {% if site.social.instagram %}
+            <a href="{{ site.social.instagram }}" target="_blank" rel="noopener" aria-label="Instagram">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  {# Map Section #}
+  {% if contact.map_embed or contact.show_map | default(value=true) %}
+  <section class="contact-map">
+    <h2 class="sr-only">Our Location</h2>
+    {% if contact.map_embed %}
+    {{ contact.map_embed | safe }}
+    {% else %}
+    <div class="map-placeholder">
+      <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+      <p>Map location will be displayed here</p>
+      <a href="https://maps.google.com" target="_blank" rel="noopener" class="btn btn--outline">View on Google Maps</a>
+    </div>
+    {% endif %}
+  </section>
+  {% endif %}
+
+  {# FAQ Section #}
+  {% if contact.faqs | length > 0 or contact.show_faq | default(value=true) %}
+  <section class="contact-faq">
+    <div class="section-header text-center">
+      <span class="section-label">FAQ</span>
+      <h2>Frequently Asked Questions</h2>
+      <p class="section-description">Find answers to common questions below.</p>
+    </div>
+
+    <div class="faq-list">
+      {% for faq in contact.faqs %}
+      <details class="faq-item">
+        <summary class="faq-question">
+          {{ faq.question }}
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </summary>
+        <div class="faq-answer">
+          {{ faq.answer | safe }}
+        </div>
+      </details>
+      {% else %}
+      <details class="faq-item">
+        <summary class="faq-question">
+          How quickly do you respond to inquiries?
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </summary>
+        <div class="faq-answer">
+          <p>We typically respond to all inquiries within 24-48 business hours. For urgent matters, please call our phone number directly.</p>
+        </div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-question">
+          Do you offer support for products purchased?
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </summary>
+        <div class="faq-answer">
+          <p>Yes, we provide comprehensive support for all products purchased through our platform. You can reach out to our support team through the contact form or email us directly.</p>
+        </div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-question">
+          What information should I include in my message?
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </summary>
+        <div class="faq-answer">
+          <p>Please include as much relevant information as possible, such as your order number (if applicable), a detailed description of your question or issue, and any screenshots if relevant. This helps us assist you more effectively.</p>
+        </div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-question">
+          Can I schedule a call or meeting?
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </summary>
+        <div class="faq-answer">
+          <p>Yes, for business partnerships or detailed consultations, we offer scheduled calls. Please select "Business Partnership" as your subject in the contact form and mention your preferred times, and we'll get back to you to confirm.</p>
+        </div>
+      </details>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+/* Contact Page Styles */
+.contact-hero {
+  background-color: var(--bg-secondary);
+  padding: var(--space-16) 0;
+  text-align: center;
+  margin-bottom: var(--space-12);
+}
+
+.section-label {
+  display: inline-block;
+  padding: var(--space-1) var(--space-3);
+  background-color: var(--color-primary);
+  color: var(--text-inverse);
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: var(--radius-full);
+  margin-bottom: var(--space-4);
+}
+
+/* Contact Wrapper */
+.contact-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: var(--space-10);
+  margin-bottom: var(--space-12);
+}
+
+/* Contact Form */
+.contact-form-section h2 {
+  margin-bottom: var(--space-6);
+}
+
+.contact-form {
+  background-color: var(--bg-primary);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+.form-group {
+  margin-bottom: var(--space-4);
+}
+
+.form-group label {
+  display: block;
+  font-weight: var(--font-medium);
+  margin-bottom: var(--space-2);
+  font-size: var(--text-sm);
+}
+
+.form-group .required {
+  color: var(--color-error);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: var(--text-base);
+  background-color: var(--bg-primary);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 150px;
+}
+
+.form-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.form-checkbox input {
+  width: auto;
+  margin-top: 4px;
+}
+
+.form-checkbox label {
+  margin-bottom: 0;
+  font-weight: var(--font-normal);
+}
+
+.form-checkbox a {
+  color: var(--color-primary);
+}
+
+.btn-loading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.form-message {
+  margin-top: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+}
+
+.form-message.success {
+  background-color: var(--color-success-light);
+  color: var(--color-success);
+  border: 1px solid var(--color-success);
+}
+
+.form-message.error {
+  background-color: var(--color-error-light);
+  color: var(--color-error);
+  border: 1px solid var(--color-error);
+}
+
+/* Contact Info Sidebar */
+.contact-info-card {
+  background-color: var(--bg-secondary);
+  padding: var(--space-6);
+  border-radius: var(--radius-xl);
+  position: sticky;
+  top: calc(var(--header-height) + var(--space-6));
+}
+
+.contact-info-card h3 {
+  margin-bottom: var(--space-2);
+}
+
+.contact-info-card > p {
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-6);
+}
+
+.contact-info-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--space-6);
+}
+
+.contact-info-item {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.contact-info-item:last-child {
+  border-bottom: none;
+}
+
+.contact-info-icon {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-primary);
+  color: var(--color-primary);
+  border-radius: var(--radius-lg);
+  flex-shrink: 0;
+}
+
+.contact-info-item strong {
+  display: block;
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-1);
+}
+
+.contact-info-item a,
+.contact-info-item address {
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  font-style: normal;
+}
+
+.contact-info-item a:hover {
+  color: var(--color-primary);
+}
+
+/* Business Hours */
+.business-hours {
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border-color);
+  margin-bottom: var(--space-4);
+}
+
+.business-hours h4 {
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-3);
+}
+
+.business-hours ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.business-hours li {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-sm);
+  padding: var(--space-2) 0;
+  color: var(--text-secondary);
+}
+
+/* Contact Social */
+.contact-social {
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border-color);
+}
+
+.contact-social h4 {
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-3);
+}
+
+.contact-social .social-links {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.contact-social .social-links a {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-primary);
+  color: var(--text-secondary);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.contact-social .social-links a:hover {
+  background-color: var(--color-primary);
+  color: var(--text-inverse);
+}
+
+/* Map Section */
+.contact-map {
+  margin-bottom: var(--space-12);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  height: 400px;
+}
+
+.contact-map iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.map-placeholder {
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg-secondary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  color: var(--text-secondary);
+}
+
+/* FAQ Section */
+.contact-faq {
+  padding: var(--space-12) 0;
+}
+
+.section-header.text-center {
+  text-align: center;
+  margin-bottom: var(--space-10);
+}
+
+.section-description {
+  font-size: var(--text-lg);
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.faq-list {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.faq-item {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-4);
+  overflow: hidden;
+}
+
+.faq-question {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-4) var(--space-6);
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  list-style: none;
+  transition: background-color var(--transition-fast);
+}
+
+.faq-question::-webkit-details-marker {
+  display: none;
+}
+
+.faq-question:hover {
+  background-color: var(--bg-secondary);
+}
+
+.faq-question svg {
+  transition: transform var(--transition-base);
+  flex-shrink: 0;
+}
+
+.faq-item[open] .faq-question svg {
+  transform: rotate(180deg);
+}
+
+.faq-answer {
+  padding: 0 var(--space-6) var(--space-4);
+  color: var(--text-secondary);
+}
+
+.faq-answer p {
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .contact-wrapper {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-info-card {
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .contact-hero {
+    padding: var(--space-10) 0;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-map {
+    height: 300px;
+  }
+}
+</style>
+
+<script>
+// Contact form handling
+document.getElementById('contact-form')?.addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  const form = e.target;
+  const submitBtn = form.querySelector('button[type="submit"]');
+  const btnText = submitBtn.querySelector('.btn-text');
+  const btnLoading = submitBtn.querySelector('.btn-loading');
+  const formMessage = form.querySelector('.form-message');
+
+  // Show loading state
+  btnText.hidden = true;
+  btnLoading.hidden = false;
+  submitBtn.disabled = true;
+  formMessage.hidden = true;
+
+  try {
+    const formData = new FormData(form);
+    const response = await fetch(form.action, {
+      method: 'POST',
+      body: formData
+    });
+
+    if (response.ok) {
+      formMessage.textContent = 'Thank you for your message! We\'ll get back to you soon.';
+      formMessage.className = 'form-message success';
+      formMessage.hidden = false;
+      form.reset();
+    } else {
+      throw new Error('Form submission failed');
+    }
+  } catch (error) {
+    formMessage.textContent = 'Sorry, there was an error sending your message. Please try again later.';
+    formMessage.className = 'form-message error';
+    formMessage.hidden = false;
+  } finally {
+    btnText.hidden = false;
+    btnLoading.hidden = true;
+    submitBtn.disabled = false;
+  }
+});
+</script>
+{% endblock %}

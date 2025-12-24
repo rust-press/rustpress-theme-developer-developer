@@ -1,0 +1,296 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Categories | {{ site.name }}{% endblock %}
+{% block description %}Browse all categories on {{ site.name }}. Find articles and content organized by topic.{% endblock %}
+
+{% block body_class %}page-categories{% endblock %}
+
+{% block content %}
+<div class="container">
+  {# Breadcrumbs #}
+  {% if theme.breadcrumbs.enabled | default(value=true) %}
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+    <a href="/">Home</a>
+    <span class="separator">/</span>
+    <span class="current">Categories</span>
+  </nav>
+  {% endif %}
+
+  {# Page Header #}
+  <header class="page-header text-center">
+    <h1 class="page-title">Categories</h1>
+    <p class="page-description">Explore our content organized by topic. Find exactly what you're looking for.</p>
+  </header>
+
+  {# Categories Grid #}
+  {% if categories | length > 0 %}
+  <div class="categories-grid">
+    {% for category in categories %}
+    <a href="{{ category.url }}" class="category-card">
+      {% if category.image %}
+      <div class="category-card-image">
+        <img src="{{ category.image }}" alt="{{ category.name }}" loading="lazy">
+        <div class="category-card-overlay"></div>
+      </div>
+      {% else %}
+      <div class="category-card-icon">
+        {% if category.icon %}
+        {{ category.icon | safe }}
+        {% else %}
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+        {% endif %}
+      </div>
+      {% endif %}
+      <div class="category-card-content">
+        <h2 class="category-card-title">{{ category.name }}</h2>
+        {% if category.description %}
+        <p class="category-card-description">{{ category.description | truncate(length=100) }}</p>
+        {% endif %}
+        <span class="category-card-count">{{ category.post_count }} article{% if category.post_count != 1 %}s{% endif %}</span>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  {# No Categories #}
+  <div class="no-results">
+    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+    <h2>No categories yet</h2>
+    <p>Categories will appear here once content is added.</p>
+    <a href="/" class="btn btn--primary">Go to Homepage</a>
+  </div>
+  {% endif %}
+
+  {# Popular Tags Section #}
+  {% if tags | length > 0 %}
+  <section class="tags-section">
+    <h2>Popular Tags</h2>
+    <div class="tags-cloud">
+      {% for tag in tags %}
+      <a href="{{ tag.url }}" class="tag-item tag-size-{{ tag.weight | default(value='md') }}">
+        #{{ tag.name }}
+        <span class="tag-count">{{ tag.post_count }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+/* Categories Page Styles */
+.page-header.text-center {
+  text-align: center;
+  padding: var(--space-10) 0;
+  margin-bottom: var(--space-8);
+}
+
+.page-title {
+  font-size: var(--text-4xl);
+  margin-bottom: var(--space-3);
+}
+
+.page-description {
+  font-size: var(--text-lg);
+  color: var(--text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Categories Grid */
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-6);
+  margin-bottom: var(--space-12);
+}
+
+.category-card {
+  position: relative;
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  transition: all var(--transition-base);
+}
+
+.category-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-xl);
+}
+
+.category-card-image {
+  position: relative;
+  aspect-ratio: 16/9;
+  overflow: hidden;
+}
+
+.category-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-base);
+}
+
+.category-card:hover .category-card-image img {
+  transform: scale(1.1);
+}
+
+.category-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.6) 100%);
+}
+
+.category-card-icon {
+  aspect-ratio: 16/9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  color: var(--text-inverse);
+}
+
+.category-card-content {
+  padding: var(--space-5);
+}
+
+.category-card-image + .category-card-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  color: white;
+}
+
+.category-card-title {
+  font-size: var(--text-xl);
+  margin-bottom: var(--space-2);
+}
+
+.category-card-image + .category-card-content .category-card-title {
+  color: white;
+}
+
+.category-card-description {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-2);
+  line-height: var(--leading-relaxed);
+}
+
+.category-card-image + .category-card-content .category-card-description {
+  color: rgba(255,255,255,0.8);
+}
+
+.category-card-count {
+  font-size: var(--text-sm);
+  color: var(--color-primary);
+  font-weight: var(--font-medium);
+}
+
+.category-card-image + .category-card-content .category-card-count {
+  color: rgba(255,255,255,0.9);
+}
+
+/* Tags Section */
+.tags-section {
+  padding: var(--space-10) 0;
+  border-top: 1px solid var(--border-color);
+}
+
+.tags-section h2 {
+  text-align: center;
+  margin-bottom: var(--space-6);
+}
+
+.tags-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+}
+
+.tag-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  color: var(--text-primary);
+  transition: all var(--transition-fast);
+}
+
+.tag-item:hover {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--text-inverse);
+}
+
+.tag-size-sm {
+  font-size: var(--text-xs);
+  padding: var(--space-1) var(--space-3);
+}
+
+.tag-size-md {
+  font-size: var(--text-sm);
+}
+
+.tag-size-lg {
+  font-size: var(--text-base);
+  padding: var(--space-3) var(--space-5);
+}
+
+.tag-size-xl {
+  font-size: var(--text-lg);
+  padding: var(--space-3) var(--space-6);
+  font-weight: var(--font-medium);
+}
+
+.tag-count {
+  font-size: 0.75em;
+  opacity: 0.7;
+}
+
+/* No Results */
+.no-results {
+  text-align: center;
+  padding: var(--space-16);
+}
+
+.no-results svg {
+  color: var(--text-tertiary);
+  margin-bottom: var(--space-6);
+}
+
+.no-results h2 {
+  font-size: var(--text-2xl);
+  margin-bottom: var(--space-3);
+}
+
+.no-results p {
+  color: var(--text-secondary);
+  margin-bottom: var(--space-6);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .categories-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .categories-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .page-title {
+    font-size: var(--text-3xl);
+  }
+}
+</style>
+{% endblock %}

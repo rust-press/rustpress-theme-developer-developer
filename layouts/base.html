@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="{{ site.language | default(value='en') }}" {% if theme.dark_mode %}data-theme="dark"{% endif %}>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <!-- Title -->
+  <title>{% block title %}{{ page.title }} | {{ site.name }}{% endblock %}</title>
+
+  <!-- Meta Tags -->
+  <meta name="description" content="{% block description %}{{ page.description | default(value=site.description) }}{% endblock %}">
+  <meta name="keywords" content="{% block keywords %}{{ page.keywords | default(value=site.keywords) }}{% endblock %}">
+  <meta name="author" content="{{ site.author }}">
+  <meta name="robots" content="{% block robots %}index, follow{% endblock %}">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="{% block og_title %}{{ page.title }}{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}{{ page.description | default(value=site.description) }}{% endblock %}">
+  <meta property="og:image" content="{% block og_image %}{{ page.featured_image | default(value=site.default_image) }}{% endblock %}">
+  <meta property="og:url" content="{{ page.url }}">
+  <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+  <meta property="og:site_name" content="{{ site.name }}">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ page.title }}">
+  <meta name="twitter:description" content="{{ page.description | default(value=site.description) }}">
+  <meta name="twitter:image" content="{{ page.featured_image | default(value=site.default_image) }}">
+  {% if site.twitter %}<meta name="twitter:site" content="@{{ site.twitter }}">{% endif %}
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="{{ page.canonical_url | default(value=page.url) }}">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="{{ theme.favicon | default(value='/favicon.ico') }}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ theme.apple_touch_icon | default(value='/apple-touch-icon.png') }}">
+
+  <!-- Preconnect for performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Theme Styles -->
+  <link rel="stylesheet" href="/themes/developer-developer/assets/css/style.css">
+  <link rel="stylesheet" href="/themes/developer-developer/assets/css/responsive.css">
+  <link rel="stylesheet" href="/themes/developer-developer/assets/css/dark-mode.css">
+
+  <!-- Custom CSS from theme settings -->
+  {% if theme.custom_css %}
+  <style>{{ theme.custom_css | safe }}</style>
+  {% endif %}
+
+  <!-- Theme Color Variables -->
+  <style>
+    :root {
+      {% if theme.colors.primary %}--color-primary: {{ theme.colors.primary }};{% endif %}
+      {% if theme.colors.secondary %}--color-secondary: {{ theme.colors.secondary }};{% endif %}
+      {% if theme.colors.accent %}--color-accent: {{ theme.colors.accent }};{% endif %}
+    }
+  </style>
+
+  <!-- Additional Head Content -->
+  {% block head %}{% endblock %}
+
+  <!-- Analytics -->
+  {% if theme.google_analytics_id %}
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{ theme.google_analytics_id }}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '{{ theme.google_analytics_id }}');
+  </script>
+  {% endif %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+  <div class="site-wrapper">
+    <!-- Skip Link for Accessibility -->
+    <a href="#main-content" class="sr-only">Skip to main content</a>
+
+    <!-- Reading Progress Bar (for single posts) -->
+    {% block reading_progress %}{% endblock %}
+
+    <!-- Header -->
+    {% block header %}
+    {% include "partials/header.html" %}
+    {% endblock %}
+
+    <!-- Main Content -->
+    <main id="main-content" class="site-content">
+      {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    {% block footer %}
+    {% include "partials/footer.html" %}
+    {% endblock %}
+
+    <!-- Back to Top Button -->
+    <button class="back-to-top" aria-label="Back to top">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="18 15 12 9 6 15"></polyline>
+      </svg>
+    </button>
+
+    <!-- Mobile Menu -->
+    {% include "partials/mobile-menu.html" %}
+
+    <!-- Search Overlay -->
+    {% include "partials/search-overlay.html" %}
+  </div>
+
+  <!-- Theme Scripts -->
+  <script src="/themes/developer-developer/assets/js/theme.js"></script>
+  <script src="/themes/developer-developer/assets/js/navigation.js"></script>
+  <script src="/themes/developer-developer/assets/js/search.js"></script>
+
+  <!-- Custom JS from theme settings -->
+  {% if theme.custom_js %}
+  <script>{{ theme.custom_js | safe }}</script>
+  {% endif %}
+
+  <!-- Additional Scripts -->
+  {% block scripts %}{% endblock %}
+</body>
+</html>

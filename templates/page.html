@@ -1,0 +1,280 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}{{ page.title }} | {{ site.name }}{% endblock %}
+{% block description %}{{ page.excerpt | striptags | truncate(length=160) }}{% endblock %}
+
+{% block body_class %}page-{{ page.slug }}{% endblock %}
+
+{% block content %}
+<article class="static-page">
+  {# Breadcrumbs #}
+  {% if theme.breadcrumbs.enabled | default(value=true) and page.show_breadcrumbs | default(value=true) %}
+  <nav class="breadcrumbs container" aria-label="Breadcrumb">
+    <a href="/">Home</a>
+    {% if page.parent %}
+    <span class="separator">/</span>
+    <a href="{{ page.parent.url }}">{{ page.parent.title }}</a>
+    {% endif %}
+    <span class="separator">/</span>
+    <span class="current">{{ page.title }}</span>
+  </nav>
+  {% endif %}
+
+  <div class="container">
+    {# Page Header #}
+    {% if page.show_header | default(value=true) %}
+    <header class="page-header {% if page.header_style %}page-header--{{ page.header_style }}{% endif %}">
+      {% if page.subtitle %}
+      <span class="page-subtitle">{{ page.subtitle }}</span>
+      {% endif %}
+      <h1 class="page-title">{{ page.title }}</h1>
+      {% if page.excerpt %}
+      <p class="page-description">{{ page.excerpt }}</p>
+      {% endif %}
+    </header>
+    {% endif %}
+
+    {# Featured Image #}
+    {% if page.featured_image and page.show_featured_image | default(value=true) %}
+    <figure class="page-featured-image">
+      <img src="{{ page.featured_image }}" alt="{{ page.title }}" loading="eager">
+      {% if page.featured_image_caption %}
+      <figcaption>{{ page.featured_image_caption }}</figcaption>
+      {% endif %}
+    </figure>
+    {% endif %}
+
+    {# Page Content #}
+    <div class="page-content-wrapper {% if page.layout == 'wide' %}page-content--wide{% elif page.layout == 'narrow' %}page-content--narrow{% endif %} {% if page.sidebar %}page-content--with-sidebar{% endif %}">
+      <div class="page-content">
+        {{ page.content | safe }}
+      </div>
+
+      {# Optional Sidebar #}
+      {% if page.sidebar %}
+      {% include "partials/sidebar.html" %}
+      {% endif %}
+    </div>
+
+    {# Child Pages (if this is a parent page) #}
+    {% if page.children | length > 0 %}
+    <section class="child-pages">
+      <h2>Related Pages</h2>
+      <div class="child-pages-grid">
+        {% for child in page.children %}
+        <a href="{{ child.url }}" class="child-page-card">
+          {% if child.icon %}
+          <div class="child-page-icon">{{ child.icon | safe }}</div>
+          {% endif %}
+          <h3 class="child-page-title">{{ child.title }}</h3>
+          {% if child.excerpt %}
+          <p class="child-page-excerpt">{{ child.excerpt | truncate(length=100) }}</p>
+          {% endif %}
+        </a>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+  </div>
+</article>
+{% endblock %}
+
+{% block scripts %}
+<style>
+/* Static Page Styles */
+.static-page {
+  padding-bottom: var(--space-12);
+}
+
+.page-header {
+  text-align: center;
+  padding: var(--space-10) 0;
+  margin-bottom: var(--space-8);
+}
+
+.page-header--left {
+  text-align: left;
+}
+
+.page-header--hero {
+  padding: var(--space-16) 0;
+  background-color: var(--bg-secondary);
+  margin-bottom: var(--space-10);
+}
+
+.page-subtitle {
+  display: inline-block;
+  padding: var(--space-1) var(--space-3);
+  background-color: var(--color-primary);
+  color: var(--text-inverse);
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: var(--radius-full);
+  margin-bottom: var(--space-4);
+}
+
+.page-title {
+  font-size: var(--text-4xl);
+  margin-bottom: var(--space-4);
+}
+
+.page-description {
+  font-size: var(--text-xl);
+  color: var(--text-secondary);
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.page-header--left .page-description {
+  margin: 0;
+}
+
+/* Featured Image */
+.page-featured-image {
+  margin-bottom: var(--space-10);
+  border-radius: var(--radius-2xl);
+  overflow: hidden;
+}
+
+.page-featured-image img {
+  width: 100%;
+  height: auto;
+}
+
+/* Content Wrapper */
+.page-content-wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.page-content--wide {
+  max-width: 100%;
+}
+
+.page-content--narrow {
+  max-width: 650px;
+}
+
+.page-content--with-sidebar {
+  display: grid;
+  grid-template-columns: 1fr var(--sidebar-width);
+  gap: var(--space-8);
+  max-width: 100%;
+}
+
+/* Page Content Typography */
+.page-content {
+  font-size: var(--text-lg);
+  line-height: var(--leading-relaxed);
+}
+
+.page-content p {
+  margin-bottom: var(--space-6);
+  color: var(--text-primary);
+}
+
+.page-content h2 {
+  margin-top: var(--space-10);
+  margin-bottom: var(--space-4);
+}
+
+.page-content h3 {
+  margin-top: var(--space-8);
+  margin-bottom: var(--space-3);
+}
+
+.page-content img {
+  border-radius: var(--radius-lg);
+  margin: var(--space-6) 0;
+}
+
+.page-content ul,
+.page-content ol {
+  margin-bottom: var(--space-6);
+  padding-left: var(--space-8);
+}
+
+.page-content li {
+  margin-bottom: var(--space-2);
+  color: var(--text-primary);
+}
+
+/* Child Pages */
+.child-pages {
+  margin-top: var(--space-12);
+  padding-top: var(--space-8);
+  border-top: 1px solid var(--border-color);
+}
+
+.child-pages h2 {
+  text-align: center;
+  margin-bottom: var(--space-6);
+}
+
+.child-pages-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-6);
+}
+
+.child-page-card {
+  padding: var(--space-6);
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius-xl);
+  text-align: center;
+  transition: all var(--transition-base);
+}
+
+.child-page-card:hover {
+  background-color: var(--bg-tertiary);
+  transform: translateY(-4px);
+}
+
+.child-page-icon {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto var(--space-4);
+  background-color: var(--color-primary);
+  color: var(--text-inverse);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.child-page-title {
+  font-size: var(--text-lg);
+  margin-bottom: var(--space-2);
+  color: var(--text-primary);
+}
+
+.child-page-excerpt {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .page-content--with-sidebar {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .child-pages-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .page-title {
+    font-size: var(--text-3xl);
+  }
+
+  .page-description {
+    font-size: var(--text-lg);
+  }
+}
+</style>
+{% endblock %}

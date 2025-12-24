@@ -1,0 +1,508 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}{{ site.name }} - {{ site.tagline | default(value='Developer Developer') }}{% endblock %}
+
+{% block body_class %}page-home{% endblock %}
+
+{% block content %}
+<div class="container">
+  {# Hero / Featured Section #}
+  {% if featured_posts | length > 0 %}
+  <section class="home-hero">
+    <div class="hero-grid">
+      {# Main Featured Post #}
+      {% set main_post = featured_posts | first %}
+      <article class="featured-post featured-post--main">
+        <div class="featured-post-image">
+          <a href="{{ main_post.url }}">
+            <img src="{{ main_post.featured_image | default(value='/images/placeholder-hero.jpg') }}" alt="{{ main_post.title }}" loading="eager">
+          </a>
+        </div>
+        <div class="featured-post-overlay"></div>
+        <div class="featured-post-content">
+          {% if main_post.category %}
+          <a href="{{ main_post.category.url }}" class="post-category">{{ main_post.category.name }}</a>
+          {% endif %}
+          <h2 class="post-title">
+            <a href="{{ main_post.url }}">{{ main_post.title }}</a>
+          </h2>
+          <p class="post-excerpt">{{ main_post.excerpt | truncate(length=150) }}</p>
+          <div class="post-meta">
+            <span class="post-author">
+              {% if main_post.author.avatar %}
+              <img src="{{ main_post.author.avatar }}" alt="{{ main_post.author.name }}" class="author-avatar">
+              {% endif %}
+              {{ main_post.author.name }}
+            </span>
+            <span class="post-date">{{ main_post.date | date(format='%B %d, %Y') }}</span>
+            <span class="post-reading-time">{{ main_post.reading_time }} min read</span>
+          </div>
+        </div>
+      </article>
+
+      {# Secondary Featured Posts #}
+      <div class="featured-posts-secondary">
+        {% for post in featured_posts | slice(start=1, end=3) %}
+        <article class="featured-post featured-post--small">
+          <div class="featured-post-image">
+            <a href="{{ post.url }}">
+              <img src="{{ post.featured_image | default(value='/images/placeholder-card.jpg') }}" alt="{{ post.title }}" loading="lazy">
+            </a>
+          </div>
+          <div class="featured-post-overlay"></div>
+          <div class="featured-post-content">
+            {% if post.category %}
+            <a href="{{ post.category.url }}" class="post-category">{{ post.category.name }}</a>
+            {% endif %}
+            <h3 class="post-title">
+              <a href="{{ post.url }}">{{ post.title }}</a>
+            </h3>
+            <div class="post-meta">
+              <span class="post-date">{{ post.date | date(format='%B %d, %Y') }}</span>
+            </div>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+  {# Main Content Area #}
+  <div class="content-area {% if theme.sidebar.enabled %}content-area--with-sidebar{% endif %}">
+    <div class="main-content">
+      {# Latest Posts Section #}
+      <section class="home-section">
+        <div class="section-header">
+          <h2 class="section-title">Latest Articles</h2>
+          <a href="/blog" class="section-link">View All
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </a>
+        </div>
+
+        <div class="posts-grid">
+          {% for post in posts | slice(end=6) %}
+          <article class="card">
+            <a href="{{ post.url }}" class="card-image">
+              <img src="{{ post.featured_image | default(value='/images/placeholder-card.jpg') }}" alt="{{ post.title }}" loading="lazy">
+              {% if post.category %}
+              <span class="card-badge">{{ post.category.name }}</span>
+              {% endif %}
+            </a>
+            <div class="card-content">
+              <div class="card-meta">
+                <span>{{ post.date | date(format='%B %d, %Y') }}</span>
+                <span>{{ post.reading_time }} min read</span>
+              </div>
+              <h3 class="card-title">
+                <a href="{{ post.url }}">{{ post.title }}</a>
+              </h3>
+              <p class="card-excerpt">{{ post.excerpt | truncate(length=120) }}</p>
+              <div class="card-footer">
+                <div class="card-author">
+                  {% if post.author.avatar %}
+                  <img src="{{ post.author.avatar }}" alt="{{ post.author.name }}" class="card-author-avatar">
+                  {% endif %}
+                  <span class="card-author-name">{{ post.author.name }}</span>
+                </div>
+                <a href="{{ post.url }}" class="btn btn--ghost btn--sm">Read More</a>
+              </div>
+            </div>
+          </article>
+          {% else %}
+          {# Placeholder cards if no posts #}
+          {% for i in range(end=6) %}
+          <article class="card">
+            <a href="#" class="card-image">
+              <img src="/images/placeholder-card.jpg" alt="Sample Post" loading="lazy">
+              <span class="card-badge">Technology</span>
+            </a>
+            <div class="card-content">
+              <div class="card-meta">
+                <span>January {{ 15 - i }}, 2024</span>
+                <span>5 min read</span>
+              </div>
+              <h3 class="card-title">
+                <a href="#">Sample Article Title Goes Here</a>
+              </h3>
+              <p class="card-excerpt">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore.</p>
+              <div class="card-footer">
+                <div class="card-author">
+                  <span class="card-author-name">Author Name</span>
+                </div>
+                <a href="#" class="btn btn--ghost btn--sm">Read More</a>
+              </div>
+            </div>
+          </article>
+          {% endfor %}
+          {% endfor %}
+        </div>
+      </section>
+
+      {# Categories Section #}
+      {% if categories | length > 0 %}
+      <section class="home-section home-categories">
+        <div class="section-header">
+          <h2 class="section-title">Browse by Category</h2>
+          <a href="/categories" class="section-link">All Categories
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </a>
+        </div>
+
+        <div class="categories-grid">
+          {% for category in categories | slice(end=6) %}
+          <a href="{{ category.url }}" class="category-card">
+            {% if category.image %}
+            <div class="category-image">
+              <img src="{{ category.image }}" alt="{{ category.name }}" loading="lazy">
+            </div>
+            {% endif %}
+            <div class="category-content">
+              <h3 class="category-name">{{ category.name }}</h3>
+              <span class="category-count">{{ category.post_count }} articles</span>
+            </div>
+          </a>
+          {% else %}
+          {# Placeholder categories #}
+          <a href="/category/technology" class="category-card">
+            <div class="category-content">
+              <h3 class="category-name">Technology</h3>
+              <span class="category-count">24 articles</span>
+            </div>
+          </a>
+          <a href="/category/lifestyle" class="category-card">
+            <div class="category-content">
+              <h3 class="category-name">Lifestyle</h3>
+              <span class="category-count">18 articles</span>
+            </div>
+          </a>
+          <a href="/category/travel" class="category-card">
+            <div class="category-content">
+              <h3 class="category-name">Travel</h3>
+              <span class="category-count">15 articles</span>
+            </div>
+          </a>
+          <a href="/category/food" class="category-card">
+            <div class="category-content">
+              <h3 class="category-name">Food & Recipes</h3>
+              <span class="category-count">12 articles</span>
+            </div>
+          </a>
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+
+      {# Featured Products Section (if e-commerce enabled) #}
+      {% if theme.ecommerce.enabled and featured_products | length > 0 %}
+      <section class="home-section home-products">
+        <div class="section-header">
+          <h2 class="section-title">Featured Products</h2>
+          <a href="/shop" class="section-link">View Shop
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </a>
+        </div>
+
+        <div class="products-grid">
+          {% for product in featured_products | slice(end=4) %}
+          <article class="product-card">
+            <div class="product-image">
+              <a href="{{ product.url }}">
+                <img src="{{ product.image }}" alt="{{ product.name }}" loading="lazy">
+              </a>
+              <div class="product-badges">
+                {% if product.on_sale %}
+                <span class="product-badge product-badge--sale">Sale</span>
+                {% endif %}
+                {% if product.is_new %}
+                <span class="product-badge product-badge--new">New</span>
+                {% endif %}
+              </div>
+              <div class="product-actions">
+                <button class="product-action-btn" aria-label="Quick view" data-quick-view="{{ product.id }}">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                </button>
+                <button class="product-action-btn" aria-label="Add to wishlist" data-wishlist="{{ product.id }}">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                </button>
+              </div>
+            </div>
+            <div class="product-content">
+              <span class="product-category">{{ product.category }}</span>
+              <h3 class="product-title">
+                <a href="{{ product.url }}">{{ product.name }}</a>
+              </h3>
+              <div class="product-rating">
+                <span class="stars">★★★★★</span>
+                <span class="count">({{ product.reviews_count }})</span>
+              </div>
+              <div class="product-price">
+                {% if product.sale_price %}
+                <span class="current-price">${{ product.sale_price }}</span>
+                <span class="original-price">${{ product.price }}</span>
+                {% else %}
+                <span class="current-price">${{ product.price }}</span>
+                {% endif %}
+              </div>
+            </div>
+          </article>
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+
+      {# Newsletter Section #}
+      {% if theme.newsletter.enabled %}
+      <section class="home-section home-newsletter">
+        <div class="newsletter-box">
+          <div class="newsletter-content">
+            <h2 class="newsletter-title">{{ theme.newsletter.title | default(value='Stay Updated') }}</h2>
+            <p class="newsletter-description">{{ theme.newsletter.description | default(value='Subscribe to our newsletter and never miss an update. Get the latest articles delivered straight to your inbox.') }}</p>
+          </div>
+          <form class="newsletter-form newsletter-form--inline" action="/api/newsletter" method="post">
+            <input type="email" name="email" placeholder="Enter your email address" required aria-label="Email address">
+            <button type="submit" class="btn btn--primary">Subscribe</button>
+          </form>
+        </div>
+      </section>
+      {% endif %}
+
+      {# More Posts Section #}
+      {% if posts | length > 6 %}
+      <section class="home-section">
+        <div class="section-header">
+          <h2 class="section-title">More Articles</h2>
+        </div>
+
+        <div class="posts-list">
+          {% for post in posts | slice(start=6, end=12) %}
+          <article class="post-list-item">
+            <div class="post-image">
+              <a href="{{ post.url }}">
+                <img src="{{ post.featured_image | default(value='/images/placeholder-list.jpg') }}" alt="{{ post.title }}" loading="lazy">
+              </a>
+            </div>
+            <div class="post-content">
+              <div class="card-meta">
+                {% if post.category %}
+                <a href="{{ post.category.url }}" class="post-category-link">{{ post.category.name }}</a>
+                {% endif %}
+                <span>{{ post.date | date(format='%B %d, %Y') }}</span>
+                <span>{{ post.reading_time }} min read</span>
+              </div>
+              <h3 class="card-title">
+                <a href="{{ post.url }}">{{ post.title }}</a>
+              </h3>
+              <p class="card-excerpt">{{ post.excerpt | truncate(length=200) }}</p>
+              <div class="card-footer">
+                <div class="card-author">
+                  {% if post.author.avatar %}
+                  <img src="{{ post.author.avatar }}" alt="{{ post.author.name }}" class="card-author-avatar">
+                  {% endif %}
+                  <span class="card-author-name">{{ post.author.name }}</span>
+                </div>
+                <a href="{{ post.url }}" class="btn btn--outline btn--sm">Continue Reading</a>
+              </div>
+            </div>
+          </article>
+          {% endfor %}
+        </div>
+
+        <div class="text-center mt-8">
+          <a href="/blog" class="btn btn--primary btn--lg">View All Articles</a>
+        </div>
+      </section>
+      {% endif %}
+    </div>
+
+    {# Sidebar #}
+    {% include "partials/sidebar.html" %}
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+/* Home Page Specific Styles */
+.home-hero {
+  margin-bottom: var(--space-10);
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--space-4);
+}
+
+.featured-post--main {
+  aspect-ratio: 16/10;
+}
+
+.featured-posts-secondary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.featured-post--small {
+  flex: 1;
+  aspect-ratio: auto;
+}
+
+.featured-post--small .post-title {
+  font-size: var(--text-xl);
+}
+
+.home-section {
+  margin-bottom: var(--space-12);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-6);
+}
+
+.section-title {
+  font-size: var(--text-2xl);
+  margin: 0;
+}
+
+.section-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: var(--font-medium);
+  color: var(--color-primary);
+}
+
+/* Categories Grid */
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-4);
+}
+
+.category-card {
+  position: relative;
+  padding: var(--space-6);
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius-xl);
+  text-align: center;
+  transition: all var(--transition-base);
+}
+
+.category-card:hover {
+  background-color: var(--color-primary);
+  color: var(--text-inverse);
+  transform: translateY(-4px);
+}
+
+.category-name {
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+  margin-bottom: var(--space-1);
+}
+
+.category-count {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.category-card:hover .category-count {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Newsletter Box */
+.newsletter-box {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-8);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  border-radius: var(--radius-2xl);
+  color: var(--color-white);
+}
+
+.newsletter-content {
+  flex: 1;
+}
+
+.newsletter-title {
+  font-size: var(--text-2xl);
+  color: var(--color-white);
+  margin-bottom: var(--space-2);
+}
+
+.newsletter-description {
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+}
+
+.newsletter-form--inline {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.newsletter-form--inline input {
+  padding: var(--space-3) var(--space-4);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--text-base);
+  min-width: 300px;
+}
+
+.newsletter-form--inline .btn {
+  white-space: nowrap;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .hero-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .featured-posts-secondary {
+    flex-direction: row;
+  }
+
+  .categories-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .newsletter-box {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .newsletter-form--inline {
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .newsletter-form--inline input {
+    flex: 1;
+    min-width: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .featured-posts-secondary {
+    flex-direction: column;
+  }
+
+  .categories-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .newsletter-form--inline {
+    flex-direction: column;
+  }
+
+  .newsletter-form--inline input {
+    width: 100%;
+  }
+}
+</style>
+{% endblock %}

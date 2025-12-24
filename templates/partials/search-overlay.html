@@ -1,0 +1,415 @@
+{#
+  Search Overlay Partial - Full-screen search modal
+
+  Features:
+  - Full-screen search experience
+  - Live search results
+  - Keyboard navigation
+  - Recent searches
+  - Popular searches
+#}
+
+<div class="search-overlay" role="dialog" aria-modal="true" aria-label="Search">
+  <div class="search-overlay-container">
+    {# Search Header #}
+    <div class="search-overlay-header">
+      <form class="search-form search-form--large" action="/search" method="get" role="search">
+        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input
+          type="search"
+          name="q"
+          class="search-input search-input--large"
+          placeholder="Search articles, products, pages..."
+          aria-label="Search"
+          autocomplete="off"
+          autofocus
+        >
+        <button type="button" class="search-close" aria-label="Close search">
+          <kbd>ESC</kbd>
+        </button>
+      </form>
+    </div>
+
+    {# Search Results #}
+    <div class="search-results" data-search-results>
+      {# Results will be populated by JavaScript #}
+    </div>
+
+    {# Search Footer #}
+    <div class="search-overlay-footer">
+      {# Recent Searches #}
+      <div class="search-section" data-recent-searches>
+        <h4 class="search-section-title">Recent Searches</h4>
+        <div class="search-tags">
+          {# Will be populated by JavaScript from localStorage #}
+        </div>
+      </div>
+
+      {# Popular Searches #}
+      <div class="search-section">
+        <h4 class="search-section-title">Popular Searches</h4>
+        <div class="search-tags">
+          {% for term in popular_searches | slice(end=8) %}
+          <a href="/search?q={{ term | urlencode }}" class="search-tag">{{ term }}</a>
+          {% else %}
+          <a href="/search?q=tutorials" class="search-tag">Tutorials</a>
+          <a href="/search?q=guides" class="search-tag">Guides</a>
+          <a href="/search?q=reviews" class="search-tag">Reviews</a>
+          <a href="/search?q=news" class="search-tag">News</a>
+          <a href="/search?q=tips" class="search-tag">Tips & Tricks</a>
+          {% endfor %}
+        </div>
+      </div>
+
+      {# Keyboard Shortcuts #}
+      <div class="search-shortcuts">
+        <span class="search-shortcut">
+          <kbd>↑</kbd><kbd>↓</kbd> to navigate
+        </span>
+        <span class="search-shortcut">
+          <kbd>↵</kbd> to select
+        </span>
+        <span class="search-shortcut">
+          <kbd>esc</kbd> to close
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Search Overlay Styles */
+.search-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  background-color: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 10vh;
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--transition-base);
+}
+
+.search-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.search-overlay-container {
+  width: 100%;
+  max-width: 700px;
+  background-color: var(--bg-primary);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-2xl);
+  overflow: hidden;
+  transform: translateY(-20px);
+  transition: transform var(--transition-base);
+}
+
+.search-overlay.active .search-overlay-container {
+  transform: translateY(0);
+}
+
+/* Search Header */
+.search-overlay-header {
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.search-form--large {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.search-form--large .search-icon {
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+
+.search-input--large {
+  flex: 1;
+  border: none;
+  background: none;
+  font-size: var(--text-lg);
+  color: var(--text-primary);
+  padding: var(--space-2) 0;
+}
+
+.search-input--large:focus {
+  outline: none;
+}
+
+.search-input--large::placeholder {
+  color: var(--text-tertiary);
+}
+
+.search-close kbd {
+  padding: var(--space-1) var(--space-2);
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  cursor: pointer;
+}
+
+/* Search Results */
+.search-results {
+  max-height: 400px;
+  overflow-y: auto;
+  padding: var(--space-4);
+}
+
+.search-results-group {
+  margin-bottom: var(--space-4);
+}
+
+.search-results-group:last-child {
+  margin-bottom: 0;
+}
+
+.search-results-group-title {
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-tertiary);
+  margin-bottom: var(--space-2);
+}
+
+.search-results-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.search-result-item {
+  margin-bottom: var(--space-1);
+}
+
+.search-result-item a {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-lg);
+  color: var(--text-primary);
+  transition: background-color var(--transition-fast);
+}
+
+.search-result-item a:hover,
+.search-result-item.selected a {
+  background-color: var(--bg-secondary);
+}
+
+.search-result-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+.search-result-item.selected .search-result-icon {
+  background-color: var(--color-primary);
+  color: var(--text-inverse);
+}
+
+.search-result-image {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.search-result-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.search-result-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.search-result-title {
+  display: block;
+  font-weight: var(--font-medium);
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.search-result-meta {
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+}
+
+.search-result-excerpt {
+  display: block;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.search-result-price {
+  font-size: var(--text-sm);
+  color: var(--color-primary);
+  font-weight: var(--font-medium);
+}
+
+.search-result-count {
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+}
+
+.search-highlight {
+  background-color: rgba(59, 130, 246, 0.2);
+  color: var(--color-primary);
+  padding: 0 2px;
+  border-radius: 2px;
+}
+
+/* Loading & States */
+.search-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8);
+  color: var(--text-secondary);
+}
+
+.search-loading .loading-spinner {
+  margin-bottom: var(--space-3);
+}
+
+.search-no-results,
+.search-error {
+  text-align: center;
+  padding: var(--space-8);
+  color: var(--text-secondary);
+}
+
+.search-no-results svg,
+.search-error svg {
+  color: var(--text-tertiary);
+  margin-bottom: var(--space-4);
+}
+
+.search-no-results p,
+.search-error p {
+  margin-bottom: var(--space-2);
+}
+
+.search-no-results span,
+.search-error span {
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+}
+
+/* Search Footer */
+.search-overlay-footer {
+  padding: var(--space-4);
+  border-top: 1px solid var(--border-color);
+  background-color: var(--bg-secondary);
+}
+
+.search-section {
+  margin-bottom: var(--space-4);
+}
+
+.search-section:last-of-type {
+  margin-bottom: var(--space-4);
+}
+
+.search-section-title {
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-tertiary);
+  margin-bottom: var(--space-2);
+}
+
+.search-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.search-tag {
+  padding: var(--space-1) var(--space-3);
+  background-color: var(--bg-primary);
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+  border-radius: var(--radius-full);
+  transition: all var(--transition-fast);
+}
+
+.search-tag:hover {
+  background-color: var(--color-primary);
+  color: var(--text-inverse);
+}
+
+.search-shortcuts {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-6);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-color);
+}
+
+.search-shortcut {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+}
+
+.search-shortcut kbd {
+  padding: var(--space-1) var(--space-2);
+  background-color: var(--bg-primary);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs);
+  margin-right: var(--space-1);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .search-overlay {
+    padding-top: 0;
+    align-items: stretch;
+  }
+
+  .search-overlay-container {
+    max-width: 100%;
+    height: 100%;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .search-results {
+    flex: 1;
+  }
+
+  .search-shortcuts {
+    display: none;
+  }
+}
+</style>

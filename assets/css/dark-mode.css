@@ -1,0 +1,711 @@
+/*
+ * Developer Developer Theme - Dark Mode Styles
+ * Automatically applies when user prefers dark color scheme
+ * Can also be toggled via .dark-mode class on <html> or <body>
+ */
+
+/* ============================================
+   Dark Mode Variables
+   ============================================ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --bg-tertiary: #334155;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-tertiary: #64748b;
+    --text-inverse: #0f172a;
+    --border-color: #334155;
+
+    --color-primary-light: #93c5fd;
+  }
+}
+
+/* Manual dark mode toggle */
+.dark-mode,
+[data-theme="dark"] {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #334155;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-tertiary: #64748b;
+  --text-inverse: #0f172a;
+  --border-color: #334155;
+
+  --color-primary-light: #93c5fd;
+}
+
+/* ============================================
+   Dark Mode Specific Overrides
+   ============================================ */
+@media (prefers-color-scheme: dark) {
+  /* Code blocks */
+  code {
+    background-color: var(--bg-tertiary);
+    color: var(--color-primary-light);
+  }
+
+  pre {
+    background-color: #020617;
+    border: 1px solid var(--border-color);
+  }
+
+  /* Header */
+  .site-header {
+    background-color: var(--bg-primary);
+    border-bottom-color: var(--border-color);
+  }
+
+  .site-header--transparent {
+    background-color: transparent;
+  }
+
+  .header-top {
+    background-color: #020617;
+  }
+
+  .site-title a {
+    color: var(--text-primary);
+  }
+
+  .nav-menu > li > a {
+    color: var(--text-primary);
+  }
+
+  .nav-menu > li > a:hover,
+  .nav-menu > li.current > a {
+    background-color: var(--bg-secondary);
+  }
+
+  .nav-menu .sub-menu {
+    background-color: var(--bg-secondary);
+    border-color: var(--border-color);
+  }
+
+  .sub-menu a {
+    color: var(--text-secondary);
+  }
+
+  .sub-menu a:hover {
+    background-color: var(--bg-tertiary);
+    color: var(--color-primary);
+  }
+
+  /* Header Search */
+  .header-search {
+    background-color: var(--bg-primary);
+    border-bottom-color: var(--border-color);
+  }
+
+  .search-input {
+    background-color: var(--bg-secondary);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+  }
+
+  .search-input::placeholder {
+    color: var(--text-tertiary);
+  }
+
+  /* Cards */
+  .card {
+    background-color: var(--bg-secondary);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  }
+
+  .card:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+  }
+
+  .card-title a {
+    color: var(--text-primary);
+  }
+
+  .card-footer {
+    border-top-color: var(--border-color);
+  }
+
+  .card-author-name {
+    color: var(--text-primary);
+  }
+
+  /* Widgets */
+  .widget {
+    background-color: var(--bg-secondary);
+  }
+
+  .widget-title {
+    color: var(--text-primary);
+  }
+
+  .widget-search .search-input {
+    background-color: var(--bg-tertiary);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+  }
+
+  .widget-categories a {
+    color: var(--text-secondary);
+    border-bottom-color: var(--border-color);
+  }
+
+  .widget-categories a:hover {
+    color: var(--color-primary);
+  }
+
+  .widget-recent-posts .recent-post {
+    border-bottom-color: var(--border-color);
+  }
+
+  .widget-recent-posts .post-title a {
+    color: var(--text-primary);
+  }
+
+  .widget-tags .tag {
+    background-color: var(--bg-tertiary);
+    color: var(--text-secondary);
+  }
+
+  .widget-tags .tag:hover {
+    background-color: var(--color-primary);
+    color: var(--text-inverse);
+  }
+
+  .widget-social .social-link {
+    background-color: var(--bg-tertiary);
+    color: var(--text-secondary);
+  }
+
+  /* Featured Post */
+  .featured-post-overlay {
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.2) 60%);
+  }
+
+  /* Post List */
+  .post-list-item {
+    background-color: var(--bg-secondary);
+  }
+
+  /* Single Post */
+  .single-post-title {
+    color: var(--text-primary);
+  }
+
+  .single-post-content p,
+  .single-post-content li {
+    color: var(--text-secondary);
+  }
+
+  .single-post-content h2,
+  .single-post-content h3,
+  .single-post-content h4 {
+    color: var(--text-primary);
+  }
+
+  .single-post-tags a {
+    background-color: var(--bg-tertiary);
+    color: var(--text-secondary);
+  }
+
+  .single-post-tags a:hover {
+    background-color: var(--color-primary);
+    color: var(--text-inverse);
+  }
+
+  /* Author Box */
+  .author-box {
+    background-color: var(--bg-secondary);
+  }
+
+  .author-box-name {
+    color: var(--text-primary);
+  }
+
+  .author-box-social a {
+    background-color: var(--bg-tertiary);
+    color: var(--text-secondary);
+  }
+
+  /* Post Navigation */
+  .post-navigation a {
+    background-color: var(--bg-secondary);
+  }
+
+  .post-navigation a:hover {
+    background-color: var(--bg-tertiary);
+  }
+
+  .post-navigation .nav-title {
+    color: var(--text-primary);
+  }
+
+  /* Comments */
+  .comment {
+    background-color: var(--bg-secondary);
+  }
+
+  .comment-author {
+    color: var(--text-primary);
+  }
+
+  .comment-form {
+    background-color: var(--bg-secondary);
+  }
+
+  .comment-form input,
+  .comment-form textarea {
+    background-color: var(--bg-tertiary);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+  }
+
+  .comment-form-title {
+    color: var(--text-primary);
+  }
+
+  /* Pagination */
+  .pagination a {
+    background-color: var(--bg-secondary);
+    color: var(--text-secondary);
+  }
+
+  .pagination a:hover,
+  .pagination .current {
+    background-color: var(--color-primary);
+    color: var(--text-inverse);
+  }
+
+  /* Breadcrumbs */
+  .breadcrumbs a {
+    color: var(--text-secondary);
+  }
+
+  .breadcrumbs .current {
+    color: var(--text-primary);
+  }
+
+  /* Forms */
+  .form-label {
+    color: var(--text-primary);
+  }
+
+  .form-input,
+  .form-select,
+  .form-textarea {
+    background-color: var(--bg-secondary);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+  }
+
+  .form-input::placeholder,
+  .form-textarea::placeholder {
+    color: var(--text-tertiary);
+  }
+
+  /* Buttons */
+  .btn--secondary {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+  }
+
+  .btn--secondary:hover {
+    background-color: var(--bg-tertiary);
+  }
+
+  .btn--ghost:hover {
+    background-color: var(--bg-secondary);
+  }
+
+  /* Products */
+  .product-card {
+    background-color: var(--bg-secondary);
+  }
+
+  .product-title a {
+    color: var(--text-primary);
+  }
+
+  .product-action-btn {
+    background-color: var(--bg-secondary);
+    color: var(--text-secondary);
+  }
+
+  /* Shop */
+  .shop-filters {
+    background-color: var(--bg-secondary);
+  }
+
+  .filter-title {
+    color: var(--text-primary);
+  }
+
+  .filter-list label {
+    color: var(--text-secondary);
+  }
+
+  .shop-sorting select {
+    background-color: var(--bg-secondary);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+  }
+
+  .shop-view-toggle button {
+    border-color: var(--border-color);
+    color: var(--text-secondary);
+  }
+
+  /* Single Product */
+  .product-info .product-category {
+    color: var(--color-primary-light);
+  }
+
+  .product-info .product-title {
+    color: var(--text-primary);
+  }
+
+  .product-option-value {
+    border-color: var(--border-color);
+    color: var(--text-secondary);
+  }
+
+  .product-option-value:hover,
+  .product-option-value.selected {
+    border-color: var(--color-primary);
+    background-color: var(--color-primary);
+  }
+
+  .quantity-selector {
+    border-color: var(--border-color);
+  }
+
+  .quantity-selector button {
+    color: var(--text-secondary);
+  }
+
+  .quantity-selector input {
+    background-color: transparent;
+    color: var(--text-primary);
+  }
+
+  .product-actions-secondary button {
+    border-color: var(--border-color);
+    color: var(--text-secondary);
+  }
+
+  .product-meta-info {
+    background-color: var(--bg-secondary);
+  }
+
+  .product-meta-item {
+    border-bottom-color: var(--border-color);
+  }
+
+  .product-meta-label {
+    color: var(--text-primary);
+  }
+
+  .product-tabs-nav {
+    border-bottom-color: var(--border-color);
+  }
+
+  .product-tabs-nav button {
+    color: var(--text-secondary);
+  }
+
+  /* Cart */
+  .cart-table th {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border-bottom-color: var(--border-color);
+  }
+
+  .cart-table td {
+    border-bottom-color: var(--border-color);
+  }
+
+  .cart-product-info .product-title {
+    color: var(--text-primary);
+  }
+
+  .cart-totals {
+    background-color: var(--bg-secondary);
+  }
+
+  .cart-totals-title {
+    color: var(--text-primary);
+  }
+
+  .cart-totals-row {
+    border-bottom-color: var(--border-color);
+  }
+
+  /* Contact */
+  .contact-form {
+    background-color: var(--bg-secondary);
+  }
+
+  .contact-info-item {
+    background-color: var(--bg-secondary);
+  }
+
+  .contact-info-content h4 {
+    color: var(--text-primary);
+  }
+
+  /* About */
+  .about-hero {
+    background-color: var(--bg-secondary);
+  }
+
+  .about-hero h1 {
+    color: var(--text-primary);
+  }
+
+  .about-text h2 {
+    color: var(--text-primary);
+  }
+
+  .team-section {
+    background-color: var(--bg-secondary);
+  }
+
+  .team-member-name {
+    color: var(--text-primary);
+  }
+
+  /* Author Page */
+  .author-header {
+    background-color: var(--bg-secondary);
+  }
+
+  .author-name {
+    color: var(--text-primary);
+  }
+
+  .author-stat-label {
+    color: var(--text-tertiary);
+  }
+
+  /* Search */
+  .search-header h1 {
+    color: var(--text-primary);
+  }
+
+  .no-results h2 {
+    color: var(--text-primary);
+  }
+
+  /* Error Page */
+  .error-title {
+    color: var(--text-primary);
+  }
+
+  /* Table of Contents */
+  .table-of-contents {
+    background-color: var(--bg-secondary);
+  }
+
+  .toc-title {
+    color: var(--text-primary);
+  }
+
+  .toc-list a {
+    color: var(--text-secondary);
+  }
+
+  .toc-list a:hover,
+  .toc-list a.active {
+    background-color: var(--bg-tertiary);
+    color: var(--color-primary);
+  }
+
+  /* Alerts */
+  .alert--success {
+    background-color: rgba(16, 185, 129, 0.2);
+    color: #6ee7b7;
+  }
+
+  .alert--warning {
+    background-color: rgba(245, 158, 11, 0.2);
+    color: #fcd34d;
+  }
+
+  .alert--error {
+    background-color: rgba(239, 68, 68, 0.2);
+    color: #fca5a5;
+  }
+
+  .alert--info {
+    background-color: rgba(59, 130, 246, 0.2);
+    color: #93c5fd;
+  }
+
+  /* Tables */
+  th {
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+  }
+
+  td, th {
+    border-bottom-color: var(--border-color);
+  }
+
+  /* Blockquote */
+  blockquote {
+    border-left-color: var(--color-primary);
+    color: var(--text-secondary);
+  }
+
+  /* Mobile Menu */
+  .mobile-menu {
+    background-color: var(--bg-primary);
+  }
+
+  .mobile-menu-header {
+    border-bottom-color: var(--border-color);
+  }
+
+  .mobile-nav-menu a {
+    color: var(--text-primary);
+  }
+
+  .mobile-nav-menu a:hover {
+    background-color: var(--bg-secondary);
+  }
+
+  .mobile-nav-menu .sub-menu a {
+    color: var(--text-secondary);
+  }
+
+  /* Skeleton Loading */
+  .skeleton {
+    background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-tertiary) 50%, var(--bg-secondary) 75%);
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--bg-tertiary);
+    border-radius: 5px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--text-tertiary);
+  }
+
+  /* Selection */
+  ::selection {
+    background-color: var(--color-primary);
+    color: var(--text-inverse);
+  }
+}
+
+/* ============================================
+   Manual Dark Mode Toggle (same styles)
+   ============================================ */
+.dark-mode,
+[data-theme="dark"] {
+  /* Copy all the above styles here for manual toggle support */
+  code {
+    background-color: var(--bg-tertiary);
+    color: var(--color-primary-light);
+  }
+
+  pre {
+    background-color: #020617;
+    border: 1px solid var(--border-color);
+  }
+
+  .site-header {
+    background-color: var(--bg-primary);
+    border-bottom-color: var(--border-color);
+  }
+
+  .card {
+    background-color: var(--bg-secondary);
+  }
+
+  .widget {
+    background-color: var(--bg-secondary);
+  }
+
+  .form-input,
+  .form-select,
+  .form-textarea {
+    background-color: var(--bg-secondary);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+  }
+
+  /* Add more manual dark mode styles as needed */
+}
+
+/* ============================================
+   Dark Mode Toggle Button
+   ============================================ */
+.dark-mode-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.dark-mode-toggle:hover {
+  background-color: var(--bg-secondary);
+  color: var(--color-primary);
+}
+
+.dark-mode-toggle .sun-icon {
+  display: block;
+}
+
+.dark-mode-toggle .moon-icon {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .dark-mode-toggle .sun-icon {
+    display: none;
+  }
+
+  .dark-mode-toggle .moon-icon {
+    display: block;
+  }
+}
+
+.dark-mode .dark-mode-toggle .sun-icon,
+[data-theme="dark"] .dark-mode-toggle .sun-icon {
+  display: none;
+}
+
+.dark-mode .dark-mode-toggle .moon-icon,
+[data-theme="dark"] .dark-mode-toggle .moon-icon {
+  display: block;
+}
+
+.light-mode .dark-mode-toggle .sun-icon,
+[data-theme="light"] .dark-mode-toggle .sun-icon {
+  display: block;
+}
+
+.light-mode .dark-mode-toggle .moon-icon,
+[data-theme="light"] .dark-mode-toggle .moon-icon {
+  display: none;
+}

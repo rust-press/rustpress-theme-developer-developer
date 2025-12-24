@@ -1,0 +1,132 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Server Error | {{ site.name }}{% endblock %}
+{% block description %}Something went wrong on our end.{% endblock %}
+
+{% block body_class %}page-error page-500{% endblock %}
+
+{% block content %}
+<div class="error-page">
+  <div class="container">
+    <div class="error-content">
+      <div class="error-illustration">
+        <svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="error-icon">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+        <span class="error-code">500</span>
+      </div>
+
+      <h1 class="error-title">Server Error</h1>
+      <p class="error-message">Something went wrong on our end. We're working to fix it. Please try again in a few moments.</p>
+
+      <div class="error-actions">
+        <a href="/" class="btn btn--primary btn--lg">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          Go to Homepage
+        </a>
+        <button onclick="location.reload()" class="btn btn--outline btn--lg">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+          Try Again
+        </button>
+      </div>
+
+      <div class="error-info">
+        <p>If this problem persists, please <a href="/contact">contact our support team</a>.</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+/* Error Page Styles */
+.error-page {
+  min-height: calc(100vh - var(--header-height) - 100px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--space-12) 0;
+}
+
+.error-content {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.error-illustration {
+  position: relative;
+  display: inline-block;
+  margin-bottom: var(--space-8);
+}
+
+.error-icon {
+  color: var(--color-warning);
+  opacity: 0.5;
+}
+
+.error-code {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: var(--text-6xl);
+  font-weight: var(--font-black);
+  color: var(--color-error);
+  letter-spacing: -0.05em;
+}
+
+.error-title {
+  font-size: var(--text-3xl);
+  margin-bottom: var(--space-4);
+}
+
+.error-message {
+  font-size: var(--text-lg);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-8);
+  line-height: var(--leading-relaxed);
+}
+
+.error-actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
+}
+
+.error-actions .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.error-info {
+  color: var(--text-secondary);
+  font-size: var(--text-sm);
+}
+
+.error-info a {
+  color: var(--color-primary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .error-actions {
+    flex-direction: column;
+  }
+
+  .error-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .error-code {
+    font-size: var(--text-5xl);
+  }
+}
+</style>
+{% endblock %}
